@@ -1,0 +1,4014 @@
+<!DOCTYPE html>
+<html lang="tr" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a192f" />
+  <title>Discover Kahta — Smart Travel Guide</title>
+  <style>
+    :root {
+      --navy: #0a192f;
+      --navy-2: #112442;
+      --navy-3: #1b365d;
+      --gold: #d4af37;
+      --gold-light: #f0d675;
+      --cream: #faf6ee;
+      --cream-2: #f2ebdc;
+      --white: #ffffff;
+      --text: #0f172a;
+      --muted: #526071;
+      --border: rgba(212, 175, 55, 0.28);
+      --shadow: 0 14px 35px rgba(10, 25, 47, 0.10);
+      --container-pad: clamp(14px, 3vw, 24px);
+      --radius-lg: clamp(16px, 2.2vw, 22px);
+      --radius-md: 14px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      scroll-padding-top: 76px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: clip;
+      -webkit-tap-highlight-color: rgba(212, 175, 55, 0.22);
+    }
+
+    a, button, input {
+      touch-action: manipulation;
+    }
+
+    :is(a, button, input):focus-visible {
+      outline: 2.5px solid var(--gold-light);
+      outline-offset: 2px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-inline: var(--container-pad);
+    }
+
+    /* Sağ Üst Şeffaf Hazırlayan Rozeti (Girişte İngilizce, Seçimden Sonra Seçilen Dilde) */
+    #topRightCredit {
+      position: fixed;
+      top: calc(10px + env(safe-area-inset-top));
+      right: calc(14px + env(safe-area-inset-right));
+      z-index: 10001;
+      background: rgba(10, 25, 47, 0.34);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: rgba(240, 214, 117, 0.88);
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+      transition: opacity 0.2s ease, background-color 0.2s ease;
+    }
+
+    html[dir="rtl"] #topRightCredit {
+      right: auto;
+      left: calc(14px + env(safe-area-inset-left));
+    }
+
+    @media (max-width: 600px) {
+      #topRightCredit {
+        top: calc(8px + env(safe-area-inset-top));
+        right: calc(10px + env(safe-area-inset-right));
+        font-size: 10.5px;
+        padding: 4px 10px;
+      }
+
+      html[dir="rtl"] #topRightCredit {
+        right: auto;
+        left: calc(10px + env(safe-area-inset-left));
+      }
+    }
+
+    /* Language Selection Overlay */
+    #langScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: radial-gradient(circle at top, #18345e 0%, var(--navy) 75%);
+      color: var(--white);
+      display: flex;
+      align-items: safe center;
+      justify-content: center;
+      padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      opacity: 1;
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    #langScreen.hidden {
+      opacity: 0;
+      transform: scale(0.98);
+      pointer-events: none;
+    }
+
+    .lang-box {
+      width: 100%;
+      max-width: 960px;
+      background: rgba(17, 36, 66, 0.96);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      border-radius: var(--radius-lg);
+      padding: clamp(20px, 4vw, 34px) clamp(14px, 3.5vw, 28px);
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+      animation: fadeUp 0.45s ease both;
+      margin: auto;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulseGold {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.35); }
+      50% { box-shadow: 0 0 0 14px rgba(212, 175, 55, 0); }
+    }
+
+    .sun-badge {
+      width: clamp(54px, 9vw, 68px);
+      height: clamp(54px, 9vw, 68px);
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(24px, 4.5vw, 30px);
+      font-weight: 800;
+      animation: pulseGold 2.4s infinite;
+    }
+
+    .lang-kicker {
+      color: var(--gold-light);
+      font-size: 11.5px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .lang-title {
+      font-size: clamp(21px, 4.2vw, 35px);
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .lang-sub {
+      color: #cbd5e1;
+      font-size: clamp(13px, 2vw, 14.5px);
+      margin-bottom: 16px;
+    }
+
+    .lang-audio-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .lang-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    @media (max-width: 820px) {
+      .lang-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .lang-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    }
+
+    .lang-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 15px;
+      padding: 8px 10px;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 56px;
+      transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    @media (hover: hover) {
+      .lang-card:hover {
+        background: rgba(212, 175, 55, 0.14);
+        border-color: var(--gold-light);
+        transform: translateY(-2px);
+      }
+    }
+
+    .lang-select-btn {
+      background: transparent;
+      border: none;
+      color: var(--white);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+      flex: 1;
+      min-width: 0;
+      min-height: 42px;
+      padding-inline: 2px;
+    }
+
+    html[dir="rtl"] .lang-select-btn {
+      text-align: right;
+    }
+
+    .lang-voice-btn {
+      background: rgba(212, 175, 55, 0.18);
+      border: 1px solid rgba(212, 175, 55, 0.55);
+      color: var(--gold-light);
+      border-radius: 10px;
+      padding: 7px 10px;
+      min-height: 36px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: 0.18s ease;
+    }
+
+    .lang-voice-btn:hover {
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: var(--navy);
+    }
+
+    .flag-svg {
+      width: 32px;
+      height: 22px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    }
+
+    .lang-native {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--white);
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .lang-en {
+      font-size: 11.5px;
+      color: var(--gold-light);
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Sticky Header & Responsive Navigation */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 25, 47, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.35);
+      color: var(--white);
+      padding-top: env(safe-area-inset-top);
+    }
+
+    .nav-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 10px var(--container-pad);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px 14px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: clamp(16px, 2.2vw, 19px);
+      color: var(--white);
+      text-decoration: none;
+      white-space: nowrap;
+      min-height: 36px;
+    }
+
+    .brand span.gold { color: var(--gold-light); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a, .btn-outline-sm {
+      text-decoration: none;
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 7px 11px;
+      min-height: 36px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.18s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .nav-links a {
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .nav-links a:hover {
+      color: var(--gold-light);
+      background: rgba(212, 175, 55, 0.14);
+    }
+
+    .btn-outline-sm {
+      background: rgba(212, 175, 55, 0.08);
+      color: var(--gold-light);
+      border: 1px solid rgba(212, 175, 55, 0.5);
+    }
+
+    .btn-outline-sm:hover {
+      background: rgba(212, 175, 55, 0.18);
+    }
+
+    @media (max-width: 760px) {
+      .nav-wrap {
+        flex-wrap: nowrap;
+        gap: 8px;
+      }
+
+      .nav-links {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+        flex: 1 1 auto;
+        justify-content: flex-start;
+      }
+
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav-links a, .btn-outline-sm {
+        font-size: 12px;
+        padding: 6px 10px;
+        min-height: 36px;
+      }
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-3) 100%);
+      color: var(--white);
+      padding: clamp(28px, 5vw, 48px) 0 clamp(34px, 5.5vw, 54px);
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr);
+      gap: clamp(18px, 3vw, 28px);
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .hero h1 {
+      font-size: clamp(25px, 4.5vw, 43px);
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--gold-light);
+    }
+
+    .hero p {
+      color: #cbd5e1;
+      font-size: clamp(14px, 1.8vw, 15.5px);
+      max-width: 620px;
+      margin-bottom: 20px;
+    }
+
+    .gps-bar {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 16px;
+      padding: 13px 15px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .gps-status {
+      font-size: 13.5px;
+      color: var(--gold-light);
+      font-weight: 600;
+      flex: 1 1 220px;
+    }
+
+    @media (max-width: 540px) {
+      .gps-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .gps-bar .btn-accent {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .sun-card {
+      background: var(--white);
+      color: var(--navy);
+      border-radius: var(--radius-lg);
+      padding: clamp(18px, 3vw, 24px);
+      border: 2px solid var(--gold);
+      box-shadow: var(--shadow);
+    }
+
+    .sun-card h3 {
+      font-size: clamp(15px, 2vw, 17px);
+      color: var(--navy);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .countdown-box {
+      background: var(--navy);
+      color: var(--gold-light);
+      font-size: clamp(22px, 3.6vw, 28px);
+      font-weight: 800;
+      text-align: center;
+      padding: 12px;
+      border-radius: 12px;
+      margin: 12px 0;
+      letter-spacing: 1px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sun-meta {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cold-alert {
+      background: #fef3c7;
+      border-left: 4px solid var(--gold);
+      color: #78350f;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    html[dir="rtl"] .cold-alert {
+      border-left: none;
+      border-right: 4px solid var(--gold);
+    }
+
+    /* Sections & Headers */
+    section {
+      padding: clamp(28px, 4.5vw, 44px) 0;
+    }
+
+    section.alt-bg {
+      background: var(--cream-2);
+    }
+
+    .sec-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px 16px;
+      margin-bottom: 22px;
+    }
+
+    .sec-kicker {
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      color: #9a7412;
+      margin-bottom: 4px;
+    }
+
+    .sec-title {
+      font-size: clamp(20px, 3vw, 31px);
+      color: var(--navy);
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .sec-sub {
+      color: var(--muted);
+      font-size: 13.5px;
+    }
+
+    .panel-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    /* Culinary & Sauce Grids */
+    .food-grid, .sauces-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 275px), 1fr));
+      gap: clamp(14px, 2.2vw, 20px);
+      margin-top: 8px;
+    }
+
+    .food-card, .sauce-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 22px rgba(10, 25, 47, 0.06);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    @media (hover: hover) {
+      .food-card:hover, .sauce-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 28px rgba(10, 25, 47, 0.11);
+      }
+
+      .food-card:hover .food-art-stage svg.food-svg,
+      .sauce-card:hover .sauce-art-stage svg.sauce-svg,
+      .card:hover .photo-stage svg.scenic-svg {
+        transform: scale(1.03);
+      }
+    }
+
+    .food-art-stage, .sauce-art-stage {
+      aspect-ratio: 16 / 10;
+      min-height: 155px;
+      max-height: 210px;
+      width: 100%;
+      background: #14213d;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .food-art-stage svg.food-svg,
+    .sauce-art-stage svg.sauce-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+
+    .food-badge, .sauce-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(10, 25, 47, 0.88);
+      color: var(--gold-light);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      z-index: 2;
+    }
+
+    html[dir="rtl"] .food-badge,
+    html[dir="rtl"] .sauce-badge {
+      left: auto;
+      right: 10px;
+    }
+
+    .sauce-card-body {
+      padding: 15px 16px 17px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .sauce-card-body strong, .food-card-body strong {
+      color: var(--navy);
+      font-size: 16px;
+      font-weight: 800;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .sauce-card-body span, .food-card-body span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      display: block;
+    }
+
+    .food-card-body {
+      padding: 15px 16px 17px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* Monuments Grid */
+    .monuments-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+      gap: clamp(16px, 2.4vw, 24px);
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.22s ease;
+    }
+
+    @media (hover: hover) {
+      .card:hover { transform: translateY(-4px); }
+    }
+
+    .photo-stage {
+      aspect-ratio: 16 / 10;
+      min-height: 195px;
+      max-height: 255px;
+      width: 100%;
+      background: #091629;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .photo-stage svg.scenic-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+
+    .photo-tag {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      background: rgba(10, 25, 47, 0.88);
+      color: var(--gold-light);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      z-index: 2;
+    }
+
+    html[dir="rtl"] .photo-tag {
+      left: auto;
+      right: 12px;
+    }
+
+    .dist-badge {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: var(--gold);
+      color: var(--navy);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      z-index: 2;
+      font-variant-numeric: tabular-nums;
+    }
+
+    html[dir="rtl"] .dist-badge {
+      right: auto;
+      left: 12px;
+    }
+
+    .card-body {
+      padding: clamp(16px, 2.2vw, 20px);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .card-title { font-size: clamp(17px, 2vw, 19px); font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+    .card-loc { font-size: 12.5px; color: #8a650b; font-weight: 700; margin-bottom: 8px; }
+    .card-desc { font-size: 13.5px; color: var(--muted); }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--cream-2);
+    }
+
+    .btn-primary, .btn-accent, .btn-soft {
+      border-radius: 11px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 40px;
+      padding: 9px 13px;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    .btn-primary:active, .btn-accent:active, .btn-soft:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+    }
+
+    .btn-accent {
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: var(--navy);
+      border: none;
+      font-weight: 800;
+    }
+
+    .btn-soft {
+      background: var(--cream);
+      color: var(--navy);
+      border: 1px solid var(--border);
+    }
+
+    @media (max-width: 480px) {
+      .card-actions .btn-accent,
+      .card-actions .btn-primary {
+        flex: 1 1 100%;
+      }
+    }
+
+    /* Panels, Route, Transport & SOS */
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: clamp(16px, 3vw, 26px);
+      box-shadow: var(--shadow);
+    }
+
+    .route-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 13px 0;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+
+    .route-step:last-child { border-bottom: none; }
+
+    .route-step > div {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .route-step strong {
+      display: block;
+      color: var(--navy);
+      font-size: 15px;
+    }
+
+    .route-step span:not(.step-time) {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .step-time {
+      background: var(--navy);
+      color: var(--gold-light);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 5px 10px;
+      border-radius: 8px;
+      height: fit-content;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .list-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .list-item:last-child { border-bottom: none; }
+    .list-item-main { flex: 1 1 280px; min-width: 0; }
+    .list-item strong { color: var(--navy); font-size: 15px; display: block; }
+    .list-item span { color: var(--muted); font-size: 13px; display: block; }
+    .coord-tag {
+      font-size: 11.5px !important;
+      color: #8a650b !important;
+      font-weight: 700;
+      margin-top: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 560px) {
+      .list-item > a.btn-soft {
+        width: 100%;
+      }
+    }
+
+    .bus-banner {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: var(--cream);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .bus-banner > div {
+      flex: 1 1 260px;
+      min-width: 0;
+    }
+
+    @media (max-width: 560px) {
+      .bus-banner .btn-accent {
+        width: 100%;
+      }
+    }
+
+    .sos-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 480px) {
+      .sos-actions > * {
+        flex: 1 1 100%;
+      }
+    }
+
+    /* Footer */
+    footer {
+      background: var(--navy);
+      color: #cbd5e1;
+      padding: 28px var(--container-pad) calc(84px + env(safe-area-inset-bottom));
+      text-align: center;
+      border-top: 3px solid var(--gold);
+      font-size: 13.5px;
+    }
+
+    @media (min-width: 761px) {
+      footer {
+        padding-bottom: 34px;
+      }
+    }
+
+    footer strong { color: var(--gold-light); }
+
+    .footer-welcome-strip {
+      max-width: 1120px;
+      margin: 0 auto 18px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 10px;
+    }
+
+    .footer-welcome-item {
+      font-size: 12px;
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      padding: 5px 11px;
+      border-radius: 999px;
+      transition: 0.2s ease;
+    }
+
+    .footer-welcome-item.active {
+      color: var(--navy);
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      border-color: var(--gold-light);
+      font-weight: 700;
+    }
+
+    /* Floating Miro AI Assistant & Responsive Modal */
+    .miro-fab {
+      position: fixed;
+      bottom: max(16px, env(safe-area-inset-bottom));
+      right: max(16px, env(safe-area-inset-right));
+      z-index: 950;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: var(--navy);
+      border: 2px solid var(--navy);
+      border-radius: 999px;
+      padding: 8px 15px 8px 9px;
+      min-height: 46px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 14px 32px rgba(10, 25, 47, 0.36);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    html[dir="rtl"] .miro-fab {
+      right: auto;
+      left: max(16px, env(safe-area-inset-left));
+      padding: 8px 9px 8px 15px;
+    }
+
+    .miro-logo-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--navy);
+      border: 1.5px solid var(--gold-light);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(10, 25, 47, 0.28);
+    }
+
+    .miro-logo-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    @media (hover: hover) {
+      .miro-fab:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 18px 38px rgba(10, 25, 47, 0.44);
+      }
+    }
+
+    .miro-modal {
+      position: fixed;
+      bottom: calc(74px + env(safe-area-inset-bottom));
+      right: max(16px, env(safe-area-inset-right));
+      width: min(420px, calc(100vw - 32px));
+      height: min(560px, calc(100dvh - 104px));
+      max-height: calc(100dvh - 104px);
+      z-index: 960;
+      background: var(--white);
+      color: var(--text);
+      border: 2px solid var(--gold);
+      border-radius: 22px;
+      box-shadow: 0 24px 60px rgba(10, 25, 47, 0.4);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    html[dir="rtl"] .miro-modal {
+      right: auto;
+      left: max(16px, env(safe-area-inset-left));
+    }
+
+    @media (max-width: 600px) {
+      .miro-modal {
+        bottom: calc(70px + env(safe-area-inset-bottom));
+        left: 12px;
+        right: 12px;
+        width: auto;
+        height: min(72dvh, calc(100dvh - 96px));
+        max-height: calc(100dvh - 96px);
+        border-radius: 18px;
+      }
+
+      html[dir="rtl"] .miro-modal {
+        left: 12px;
+        right: 12px;
+      }
+    }
+
+    .miro-modal.open {
+      display: flex;
+      animation: fadeUp 0.22s ease both;
+    }
+
+    .miro-header {
+      background: linear-gradient(135deg, var(--navy), var(--navy-3));
+      color: var(--white);
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 2px solid var(--gold);
+      flex-shrink: 0;
+    }
+
+    .miro-identity {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .miro-identity > div {
+      min-width: 0;
+    }
+
+    .miro-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      border: 2px solid var(--gold-light);
+      color: var(--navy);
+      font-weight: 900;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .miro-title {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .miro-sub {
+      font-size: 11px;
+      color: var(--gold-light);
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .miro-close {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .miro-close:hover {
+      background: rgba(212, 175, 55, 0.28);
+      color: var(--gold-light);
+    }
+
+    .miro-prompts {
+      padding: 9px 12px;
+      background: var(--cream);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 600px) {
+      .miro-prompts {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .miro-prompts::-webkit-scrollbar {
+        display: none;
+      }
+
+      .miro-chip {
+        flex-shrink: 0;
+      }
+    }
+
+    .miro-chip {
+      background: var(--white);
+      color: var(--navy);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 11px;
+      min-height: 32px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.16s ease;
+      white-space: nowrap;
+    }
+
+    .miro-chip:hover {
+      background: var(--gold-light);
+      border-color: var(--gold);
+    }
+
+    .miro-messages {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 13px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--cream);
+    }
+
+    .miro-msg {
+      max-width: 88%;
+      padding: 10px 13px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-line;
+      word-break: break-word;
+    }
+
+    .miro-msg.user {
+      align-self: flex-end;
+      background: var(--navy);
+      color: var(--white);
+      border-bottom-right-radius: 4px;
+    }
+
+    html[dir="rtl"] .miro-msg.user {
+      align-self: flex-start;
+      border-bottom-right-radius: 14px;
+      border-bottom-left-radius: 4px;
+    }
+
+    .miro-msg.bot {
+      align-self: flex-start;
+      background: var(--white);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 4px 12px rgba(10, 25, 47, 0.06);
+    }
+
+    html[dir="rtl"] .miro-msg.bot {
+      align-self: flex-end;
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 4px;
+    }
+
+    .miro-speak-inline {
+      margin-top: 7px;
+      background: var(--cream);
+      color: var(--navy);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 9px;
+      min-height: 30px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .miro-speak-inline:hover {
+      background: var(--gold-light);
+    }
+
+    .miro-input-row {
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .miro-input {
+      flex: 1;
+      min-width: 0;
+      min-height: 40px;
+      border: 1px solid #cbd5e1;
+      border-radius: 11px;
+      padding: 9px 12px;
+      font-size: 16px;
+      color: var(--text);
+      outline: none;
+    }
+
+    @media (min-width: 601px) {
+      .miro-input {
+        font-size: 13.5px;
+      }
+
+      .miro-input-row {
+        padding: 10px 12px;
+      }
+    }
+
+    .miro-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: calc(74px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%) translateY(140px);
+      width: min(92vw, 440px);
+      text-align: center;
+      background: var(--navy);
+      color: var(--white);
+      border: 1px solid var(--gold);
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 10000;
+      pointer-events: none;
+      transition: transform 0.25s ease;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    @media (min-width: 761px) {
+      .toast {
+        bottom: 22px;
+      }
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Bilgisayar (Masaüstü) ve Telefon (Mobil) Uyumlu Ek Düzenlemeler */
+    @media (min-width: 1024px) {
+      .hero {
+        padding: 48px 0 56px;
+      }
+
+      .hero-grid {
+        grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.85fr);
+        gap: 32px;
+      }
+
+      .monuments-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+      }
+
+      .food-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      .sauces-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      .miro-modal {
+        width: min(440px, calc(100vw - 48px));
+        height: min(600px, calc(100dvh - 110px));
+        bottom: 80px;
+        right: 24px;
+      }
+
+      .miro-fab {
+        bottom: 24px;
+        right: 24px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .lang-box {
+        padding: 18px 12px;
+        border-radius: 16px;
+      }
+
+      .lang-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .lang-card {
+        padding: 10px 12px;
+        min-height: 52px;
+      }
+
+      .lang-select-btn {
+        gap: 8px;
+      }
+
+      .lang-voice-btn {
+        padding: 6px 9px;
+        font-size: 11px;
+      }
+
+      .panel {
+        padding: 16px 14px;
+        border-radius: 16px;
+      }
+
+      .route-step {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .card-actions .btn-soft {
+        flex: 1 1 100%;
+      }
+
+      .miro-fab {
+        padding: 7px 12px 7px 8px;
+        font-size: 12px;
+      }
+
+      html[dir="rtl"] .miro-fab {
+        padding: 7px 8px 7px 12px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="topRightCredit" aria-live="polite">Prepared by Berat Kür</div>
+
+  <div id="langScreen" role="dialog" aria-modal="true" aria-labelledby="welcomeAnimTitle">
+    <div class="lang-box">
+      <div class="sun-badge" aria-hidden="true">☀</div>
+      <div class="lang-kicker">MOUNT NEMRUT &amp; COMMAGENE</div>
+      <h1 class="lang-title" id="welcomeAnimTitle">Discover Kahta'ya Hoş Geldiniz</h1>
+      <p class="lang-sub" id="welcomeAnimSub">Devam etmek için dilinizi seçin • Please select your language to continue</p>
+
+      <div class="lang-audio-row">
+        <button type="button" class="btn-outline-sm" id="btnWelcomeAudio">🔊 Giriş Sesli Rehberini Dinle</button>
+        <button type="button" class="btn-outline-sm" id="btnStopAudio">⏹ Sesi Durdur</button>
+      </div>
+
+      <div class="lang-grid">
+        <div class="lang-card">
+          <button type="button" class="lang-select-btn" data-lang="tr">
+            <svg class="flag-svg" viewBox="0 0 36 24" aria-hidden="true"><rect width="36" height="24" fill="#E30A17"/><circle cx="13.5" cy="12" r="5.5" fill="#fff"/><circle cx="15" cy="12" r="4.4" fill="#E30A17"/><polygon points="21,12 17.8,13 19.8,10.3 19.8,13.7 17.8,11" fill="#fff"/></svg>
+            <div><span class="lang-native">Türkçe</span><span class="lang-en">Turkish</span></div>
+          </button>
+          <button type="button" class="lang-voice-btn" data-voice-lang="tr" aria-label="Türkçe sesli önizleme">🔊 Ses</button>
+        </div>
+
+        <div class="lang-card">
+          <button type="button" class="lang-select-btn" data-lang="en">
+            <svg class="flag-svg" viewBox="0 0 36 24" aria-hidden="true"><rect width="36" height="24" fill="#012169"/><path d="M0,0 L36,24 M36,0 L0,24" stroke="#fff" stroke-width="4"/><path d="M0,0 L36,24 M36,0 L0,24" stroke="#C8102E" stroke-width="2"/><path d="M18,0 V24 M0,12 H36" stroke="#fff" stroke-width="6.5"/><path d="M18,0 V24 M0,12 H36" stroke="#C8102E" stroke-width="3.8"/></svg>
+            <div><span class="lang-native">English</span><span class="lang-en">İngilizce</span></div>
+          </button>
+          <button type="button" class="lang-voice-btn" data-voice-lang="en" aria-label="English voice preview">🔊 Voice</button>
+        </div>
+
+        <div class="lang-card">
+          <button type="button" class="lang-select-btn" data-lang="de">
+            <svg class="flag-svg" viewBox="0 0 36 24" aria-hidden="true"><rect width="36" height="8" y="0" fill="#000"/><rect width="36" height="8" y="8" fill="#DD0000"/><rect width="36" height="8" y="16" fill="#FFCE00"/></svg>
+            <div><span class="lang-native">Deutsch</span><span class="lang-en">Almanca</span></div>
+          </button>
+          <button type="button" class="lang-voice-btn" data-voice-lang="de" aria-label="Deutsch Tonvorschau">🔊 Ton</button>
+        </div>
+
+        <div class="lang-card">
+          <button type="button" class="lang-select-btn" data-lang="fr">
+            <svg class="flag-svg" viewBox="0 0 36 24" aria-hidden="true"><rect width="12" height="24" x="0" fill="#0055A4"/><rect width="12" height="24" x="12" fill="#FFF"/><rect width="12" height="24" x="24" fill="#EF4135"/></svg>
+            <div><span class="lang-native">Français</span><span class="lang-en">Fransızca</span></div>
+          </button>
+          <button type="button" class="lang-voice-btn" data-voice-lang="fr" aria-label="Aperçu vocal français">🔊 Voix</button>
+        </div>
+
+        <div class="lang-card">
+          <button type="button" class="lang-select-btn" data-lang="ar">
+            <svg class="flag-svg" viewBox="0 0 36 24" aria-hidden="true"><rect width="36" height="24" fill="#006C35"/><text x="18" y="14" fill="#fff" font-size="6.5" text-anchor="middle" font-family="sans-serif">العربية</text></svg>
+            <div><span class="lang-native">العربية</span><span class="lang-en">Arapça</span></div>
+          </button>
+          <button type="button" class="lang-voice-btn" data-voice-lang="ar" aria-label="معاينة صوتية عربية">🔊 صوت</button>
+        </div>
+
+        <div class="lang-card">
+          <button type="button" class="lang-select-btn" data-lang="es">
+            <svg class="flag-svg" viewBox="0 0 36 24" aria-hidden="true"><rect width="36" height="6" y="0" fill="#AA151B"/><rect width="36" height="12" y="6" fill="#F1BF00"/><rect width="36" height="6" y="18" fill="#AA151B"/></svg>
+            <div><span class="lang-native">Español</span><span class="lang-en">İspanyolca</span></div>
+          </button>
+          <button type="button" class="lang-voice-btn" data-voice-lang="es" aria-label="Vista previa de voz en español">🔊 Voz</button>
+        </div>
+
+        <div class="lang-card">
+          <button type="button" class="lang-select-btn" data-lang="ku">
+            <svg class="flag-svg" viewBox="0 0 36 24" aria-hidden="true"><rect width="36" height="8" y="0" fill="#D92B2B"/><rect width="36" height="8" y="8" fill="#FFFFFF"/><rect width="36" height="8" y="16" fill="#1E8E3E"/><circle cx="18" cy="12" r="3.4" fill="#F4B400"/></svg>
+            <div><span class="lang-native">Kurdî (Kurmancî)</span><span class="lang-en">Kürtçe</span></div>
+          </button>
+          <button type="button" class="lang-voice-btn" data-voice-lang="ku" aria-label="Pêşdîtina dengî ya Kurdî">🔊 Deng</button>
+        </div>
+
+        <div class="lang-card">
+          <button type="button" class="lang-select-btn" data-lang="ja">
+            <svg class="flag-svg" viewBox="0 0 36 24" aria-hidden="true"><rect width="36" height="24" fill="#FFFFFF"/><circle cx="18" cy="12" r="6.2" fill="#BC002D"/></svg>
+            <div><span class="lang-native">日本語</span><span class="lang-en">Japonca</span></div>
+          </button>
+          <button type="button" class="lang-voice-btn" data-voice-lang="ja" aria-label="日本語音声プレビュー">🔊 音声</button>
+        </div>
+
+        <div class="lang-card">
+          <button type="button" class="lang-select-btn" data-lang="zh">
+            <svg class="flag-svg" viewBox="0 0 36 24" aria-hidden="true"><rect width="36" height="24" fill="#DE2910"/><polygon points="7.5,5.5 8.6,8.8 12,8.8 9.2,10.8 10.3,14.1 7.5,12.1 4.7,14.1 5.8,10.8 3,8.8 6.4,8.8" fill="#FFDE00"/></svg>
+            <div><span class="lang-native">中文</span><span class="lang-en">Çince</span></div>
+          </button>
+          <button type="button" class="lang-voice-btn" data-voice-lang="zh" aria-label="中文语音试听">🔊 语音</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="app">
+    <header>
+      <div class="nav-wrap">
+        <a href="#monuments" class="brand">
+          <span aria-hidden="true">☀</span>
+          <span>Discover <span class="gold">Kahta</span></span>
+        </a>
+
+        <nav class="nav-links" aria-label="Ana Menü">
+          <a href="#monuments" data-i18n="navMonuments">Tarihi Eserler</a>
+          <a href="#route" data-i18n="navRoute">Gezi Rotası</a>
+          <a href="#food" data-i18n="navFood">Yemekler</a>
+          <a href="#sauces" data-i18n="navSauces">Soslar</a>
+          <a href="#transport" data-i18n="navTransport">Ulaşım</a>
+          <a href="#sos" data-i18n="navSos">SOS</a>
+          <button type="button" class="btn-outline-sm" id="btnToggleMusic">🎵 Müzik: Kapalı</button>
+          <button type="button" class="btn-outline-sm" id="btnStopAllAudio">⏹ Sesi Durdur</button>
+          <button type="button" class="btn-outline-sm" id="btnOpenMiro">
+            <span class="miro-logo-badge" style="width:20px;height:20px;">
+              <svg class="miro-logo-svg" viewBox="0 0 64 64" aria-hidden="true">
+                <defs>
+                  <linearGradient id="miroNavRing" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#f7e28b"/>
+                    <stop offset="100%" stop-color="#d4af37"/>
+                  </linearGradient>
+                </defs>
+                <circle cx="32" cy="32" r="29" fill="#0a192f" stroke="url(#miroNavRing)" stroke-width="3.5"/>
+                <path d="M32 10 L35.2 17.5 L42.5 14 L39.2 21.3 L47 22.5 L40.5 27.2 L45.5 33 L37.8 33.5 L39.5 41.2 L32 37.2 L24.5 41.2 L26.2 33.5 L18.5 33 L23.5 27.2 L17 22.5 L24.8 21.3 L21.5 14 L28.8 17.5 Z" fill="#d4af37" opacity="0.45"/>
+                <path d="M18 44 L18 22 L32 35 L46 22 L46 44" fill="none" stroke="url(#miroNavRing)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="32" cy="19" r="3.2" fill="#f7e28b"/>
+              </svg>
+            </span>
+            <span id="btnOpenMiroLabel">Miro AI</span>
+          </button>
+          <button type="button" class="btn-outline-sm" id="btnOpenLang" data-i18n="changeLang">🌐 Dil Seçimi</button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div>
+            <h1 id="heroTitle">Kommagene'nin Kalbi <em>Kahta</em>'yı Keşfet</h1>
+            <p id="heroSub">Tarihi eserlerin fotoğraflarına göz at, bulunduğun noktaya olan uzaklığı gör ve tek dokunuşla yol tarifi al.</p>
+
+            <div class="gps-bar">
+              <div class="gps-status" id="gpsStatus">📍 Konum bekleniyor — Kahta merkez referans alındı</div>
+              <button type="button" class="btn-accent" id="btnLocate">📍 Konumumu Bul &amp; Mesafe Ölç</button>
+            </div>
+          </div>
+
+          <div class="sun-card">
+            <h3 id="sunTitle">🌅 Nemrut Zirve Geri Sayımı</h3>
+            <div class="countdown-box" id="sunCountdown">00:00:00</div>
+            <div class="sun-meta">
+              <span id="sunriseLabel">Gün Doğumu: 06:45</span>
+              <span id="sunsetLabel">Gün Batımı: 17:15</span>
+            </div>
+            <div class="cold-alert" id="coldAlert">
+              🧥 Zirve uyarısı: Nemrut zirvesi merkezden çok daha serin olur. Yanınıza kalın mont alın.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="monuments">
+        <div class="container">
+          <div class="sec-head">
+            <div>
+              <div class="sec-kicker" data-i18n="monKicker">Fotoğraf Rehberi</div>
+              <h2 class="sec-title" data-i18n="monTitle">Tarihi Eserler, Uzaklık ve Yol Tarifi</h2>
+            </div>
+            <div class="sec-sub" data-i18n="monSub">6 tarihi eserin fotoğraflarını, mesafelerini ve yol tariflerini inceleyebilirsin.</div>
+          </div>
+          <div class="monuments-grid" id="monumentsGrid"></div>
+        </div>
+      </section>
+
+      <section id="route" class="alt-bg">
+        <div class="container">
+          <div class="panel">
+            <div class="panel-top">
+              <div>
+                <div class="sec-kicker" data-i18n="routeKicker">Önerilen Plan</div>
+                <h2 class="sec-title" style="font-size:clamp(20px, 2.6vw, 25px);" data-i18n="routeTitle">1 Günlük Kommagene Rotası</h2>
+              </div>
+              <button type="button" class="btn-soft" id="btnSpeakRoute" data-i18n="speakSection">🔊 Sesli Dinle</button>
+            </div>
+            <div class="route-step">
+              <span class="step-time">09:30</span>
+              <div><strong data-i18n="r1">Karakuş Tümülüsü</strong><span data-i18n="r1d">Kommagene kraliyet kadınlarına adanmış anıt mezar ve kartal sütunu.</span></div>
+            </div>
+            <div class="route-step">
+              <span class="step-time">10:30</span>
+              <div><strong data-i18n="r2">Cendere Köprüsü</strong><span data-i18n="r2d">Roma döneminden kalma, tek kemerli görkemli taş köprü.</span></div>
+            </div>
+            <div class="route-step">
+              <span class="step-time">12:00</span>
+              <div><strong data-i18n="r3">Arsemia &amp; Yeni Kale</strong><span data-i18n="r3d">Yazlık başkent kalıntıları ve vadiye hakim sarp kale.</span></div>
+            </div>
+            <div class="route-step">
+              <span class="step-time">15:30</span>
+              <div><strong data-i18n="r4">Nemrut Dağı Zirvesi</strong><span data-i18n="r4d">Dev tanrı heykelleri ve eşsiz gün batımı manzarası.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="food">
+        <div class="container">
+          <div class="panel">
+            <div class="panel-top">
+              <div>
+                <div class="sec-kicker" data-i18n="foodKicker">Yerel Mutfak</div>
+                <h2 class="sec-title" style="font-size:clamp(20px, 2.6vw, 25px);" data-i18n="foodTitle">Yemekler</h2>
+              </div>
+              <button type="button" class="btn-soft" id="btnSpeakFood" data-i18n="speakSection">🔊 Sesli Dinle</button>
+            </div>
+            <div class="food-grid" id="foodGrid"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="sauces" class="alt-bg">
+        <div class="container">
+          <div class="panel">
+            <div class="panel-top">
+              <div>
+                <div class="sec-kicker" data-i18n="saucesKicker">Eşlikçiler</div>
+                <h2 class="sec-title" style="font-size:clamp(20px, 2.6vw, 25px);" data-i18n="saucesTitle">Soslar</h2>
+              </div>
+              <button type="button" class="btn-soft" id="btnSpeakSauces" data-i18n="speakSection">🔊 Sesli Dinle</button>
+            </div>
+            <div class="sauces-grid" id="saucesGrid"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="transport">
+        <div class="container">
+          <div class="panel">
+            <div class="panel-top">
+              <div>
+                <div class="sec-kicker" data-i18n="trKicker">Bölgeye Erişim &amp; Canlı Hat</div>
+                <h2 class="sec-title" style="font-size:clamp(20px, 2.6vw, 25px);" data-i18n="trTitle">Ulaşım Bilgileri ve Konumlar</h2>
+              </div>
+              <button type="button" class="btn-soft" id="btnSpeakTransport" data-i18n="speakSection">🔊 Sesli Dinle</button>
+            </div>
+
+            <div class="list-item">
+              <div class="list-item-main">
+                <strong data-i18n="t1">Adıyaman Havalimanı (ADF)</strong>
+                <span data-i18n="t1d">Bölgeye hava yoluyla ulaşım noktasıdır.</span>
+                <span class="coord-tag">📍 37.7317° N, 38.4689° E</span>
+              </div>
+              <a class="btn-soft" href="https://www.google.com/maps/dir/?api=1&destination=37.7317,38.4689" target="_blank" rel="noopener" data-i18n="directions">🗺 Yol Tarifi</a>
+            </div>
+
+            <div class="list-item">
+              <div class="list-item-main">
+                <strong data-i18n="t2">Kâhta Merkez — Girne Mah. / Otogar Bölgesi</strong>
+                <span data-i18n="t2d">İlçe merkezi, otogar ve çevre güzergahlarına çıkış noktasıdır.</span>
+                <span class="coord-tag">📍 37.7833° N, 38.6167° E</span>
+              </div>
+              <a class="btn-soft" href="https://www.google.com/maps/dir/?api=1&destination=37.7833,38.6167" target="_blank" rel="noopener" data-i18n="directions">🗺 Yol Tarifi</a>
+            </div>
+
+            <div class="list-item">
+              <div class="list-item-main">
+                <strong data-i18n="t3">Kâhta — Nemrut Dağı Zirve Yolu</strong>
+                <span data-i18n="t3d">Yaklaşık 43–45 km dağ güzergahı; zirvede kısa yürüyüş gerekir.</span>
+                <span class="coord-tag">📍 37.9806° N, 38.7408° E</span>
+              </div>
+              <a class="btn-soft" href="https://www.google.com/maps/dir/?api=1&destination=37.9806,38.7408" target="_blank" rel="noopener" data-i18n="directions">🗺 Yol Tarifi</a>
+            </div>
+
+            <div class="bus-banner">
+              <div>
+                <strong style="color:var(--navy); font-size:15px; display:block;" data-i18n="busTitle">🚌 Kâhta Otobüsüm Nerede (Canlı Otobüs Takip)</strong>
+                <span style="color:var(--muted); font-size:13px;" data-i18n="busDesc">Kâhta Belediyesi hatlarını ve güncel otobüs konumlarını resmi sistem üzerinden görüntüleyebilirsin.</span>
+              </div>
+              <a class="btn-accent" href="https://otobus.kahta.bel.tr/" target="_blank" rel="noopener noreferrer" data-i18n="busBtn">🚌 Otobüsüm Nerede'yi Aç</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="sos" class="alt-bg">
+        <div class="container">
+          <div class="panel">
+            <div class="panel-top">
+              <div>
+                <div class="sec-kicker" data-i18n="sosKicker">Güvenlik &amp; Yardım</div>
+                <h2 class="sec-title" style="font-size:clamp(20px, 2.6vw, 25px);" data-i18n="sosTitle">SOS — Acil Yardım &amp; Konum Paylaşımı</h2>
+              </div>
+              <button type="button" class="btn-soft" id="btnSpeakSos" data-i18n="speakSection">🔊 Sesli Dinle</button>
+            </div>
+            <p style="font-size:13.5px; color:var(--muted); margin-bottom:14px;" id="sosDesc">
+              Zirvede veya yolda yardıma ihtiyaç duyduğunda GPS koordinatını tek tuşla paylaşabilirsin.
+            </p>
+            <div class="sos-actions">
+              <button type="button" class="btn-accent" id="btnShareLoc">📤 Konumumu Paylaş</button>
+              <a class="btn-primary" href="tel:112" id="btnCall112" data-i18n="call112">📞 112 Acil</a>
+              <a class="btn-soft" href="tel:156" id="btnCall156" data-i18n="call156">🛡 156 Jandarma</a>
+            </div>
+            <div id="coordsBox" style="font-size:12.5px; color:var(--navy); background:var(--cream); padding:10px 12px; border-radius:10px; font-variant-numeric:tabular-nums;">
+              Koordinat: 37.78330 • 38.61670
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Berat Kür tarafından hazırlandı -->
+    <span id="creatorMark" data-creator="Berat Kür tarafından hazırlandı" aria-hidden="true" style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">Berat Kür tarafından hazırlandı</span>
+
+    <!-- Miro multilingual Kahta AI assistant -->
+    <button type="button" class="miro-fab" id="miroFab" aria-label="Miro AI">
+      <span class="miro-logo-badge">
+        <svg class="miro-logo-svg" viewBox="0 0 64 64" role="img" aria-label="Miro Logo">
+          <defs>
+            <linearGradient id="miroFabGold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f7e28b"/>
+              <stop offset="100%" stop-color="#d4af37"/>
+            </linearGradient>
+          </defs>
+          <circle cx="32" cy="32" r="29" fill="#0a192f" stroke="url(#miroFabGold)" stroke-width="3.5"/>
+          <path d="M32 9 L35.4 17.2 L43.5 13.5 L39.8 21.6 L48 23 L41 27.8 L46 34 L37.8 34.4 L39.5 42.5 L32 38.2 L24.5 42.5 L26.2 34.4 L18 34 L23 27.8 L16 23 L24.2 21.6 L20.5 13.5 L28.6 17.2 Z" fill="#d4af37" opacity="0.42"/>
+          <path d="M17 45 L17 21 L32 35 L47 21 L47 45" fill="none" stroke="url(#miroFabGold)" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="32" cy="17.5" r="3.4" fill="#f7e28b"/>
+        </svg>
+      </span>
+      <span id="miroFabLabel">Miro AI</span>
+    </button>
+
+    <div class="miro-modal" id="miroModal" role="dialog" aria-modal="false" aria-labelledby="miroTitle">
+      <div class="miro-header">
+        <div class="miro-identity">
+          <div class="miro-avatar" aria-hidden="true">
+            <svg class="miro-logo-svg" viewBox="0 0 64 64">
+              <defs>
+                <linearGradient id="miroHeaderGold" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#fff0a6"/>
+                  <stop offset="55%" stop-color="#d4af37"/>
+                  <stop offset="100%" stop-color="#9a7412"/>
+                </linearGradient>
+              </defs>
+              <circle cx="32" cy="32" r="30" fill="#0a192f" stroke="url(#miroHeaderGold)" stroke-width="3"/>
+              <path d="M32 8 L35.6 16.8 L44 13 L40.2 21.4 L49 23 L41.5 28 L46.8 34.5 L38 35 L39.8 43.5 L32 39 L24.2 43.5 L26 35 L17.2 34.5 L22.5 28 L15 23 L23.8 21.4 L20 13 L28.4 16.8 Z" fill="#d4af37" opacity="0.48"/>
+              <path d="M16.5 45.5 L16.5 20.5 L32 35 L47.5 20.5 L47.5 45.5" fill="none" stroke="url(#miroHeaderGold)" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="32" cy="16.5" r="3.6" fill="#fff0a6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="miro-title" id="miroTitle">Miro • Kahta AI Guide</div>
+            <span class="miro-sub" id="miroSub">Seçtiğin dilde Kahta sorularını yanıtlar</span>
+          </div>
+        </div>
+        <button type="button" class="miro-close" id="miroClose" aria-label="Close">✕</button>
+      </div>
+
+      <div class="miro-prompts" id="miroPrompts"></div>
+
+      <div class="miro-messages" id="miroMessages" aria-live="polite"></div>
+
+      <form class="miro-input-row" id="miroForm">
+        <input type="text" class="miro-input" id="miroInput" placeholder="Kahta hakkında soru sor..." autocomplete="off" />
+        <button type="submit" class="btn-accent" id="miroSendBtn" aria-label="Gönder">➤</button>
+      </form>
+    </div>
+
+    <footer>
+      <div class="footer-welcome-strip" id="footerWelcomeStrip">
+        <span class="footer-welcome-item active" data-fw-lang="tr">TR: Discover Kahta'ya Hoş Geldiniz</span>
+        <span class="footer-welcome-item" data-fw-lang="en">EN: Welcome to Discover Kahta</span>
+        <span class="footer-welcome-item" data-fw-lang="de">DE: Willkommen bei Discover Kahta</span>
+        <span class="footer-welcome-item" data-fw-lang="fr">FR: Bienvenue sur Discover Kahta</span>
+        <span class="footer-welcome-item" data-fw-lang="ar">AR: مرحباً بكم في Discover Kahta</span>
+        <span class="footer-welcome-item" data-fw-lang="es">ES: Bienvenido a Discover Kahta</span>
+        <span class="footer-welcome-item" data-fw-lang="ku">KU: Bi xêr hatin Discover Kahta</span>
+        <span class="footer-welcome-item" data-fw-lang="ja">JA: Discover Kahta へようこそ</span>
+        <span class="footer-welcome-item" data-fw-lang="zh">ZH: 欢迎来到 Discover Kahta</span>
+      </div>
+      <strong>Discover Kahta</strong> • <span id="footerNote">Öğrenci Projesi — Çok Dilli Turizm Rehberi</span>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const SCENIC_SVG = {
+      nemrut: `
+        <svg class="scenic-svg" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Mount Nemrut">
+          <defs>
+            <linearGradient id="nemrutSky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0b1736"/>
+              <stop offset="48%" stop-color="#8b3a2b"/>
+              <stop offset="82%" stop-color="#e38b2c"/>
+              <stop offset="100%" stop-color="#f7d060"/>
+            </linearGradient>
+            <linearGradient id="nemrutTumulus" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#c9934c"/>
+              <stop offset="65%" stop-color="#7c5328"/>
+              <stop offset="100%" stop-color="#3b2613"/>
+            </linearGradient>
+          </defs>
+          <rect width="600" height="360" fill="url(#nemrutSky)"/>
+          <circle cx="455" cy="195" r="46" fill="#fff0a6" opacity="0.92"/>
+          <circle cx="455" cy="195" r="72" fill="#f7c948" opacity="0.22"/>
+          <path d="M0 250 Q140 195 290 245 T600 220 L600 360 L0 360 Z" fill="#2b1e2e" opacity="0.72"/>
+          <polygon points="330,275 475,112 600,268 600,360 220,360" fill="url(#nemrutTumulus)"/>
+          <g fill="#16121a" stroke="#d4af37" stroke-opacity="0.35" stroke-width="1.2">
+            <rect x="65" y="255" width="44" height="65" rx="4"/>
+            <rect x="72" y="212" width="30" height="44" rx="8"/>
+            <rect x="122" y="248" width="48" height="72" rx="4"/>
+            <rect x="130" y="202" width="32" height="47" rx="8"/>
+            <rect x="184" y="254" width="45" height="66" rx="4"/>
+            <rect x="192" y="210" width="30" height="45" rx="8"/>
+            <rect x="242" y="250" width="46" height="70" rx="4"/>
+            <rect x="250" y="206" width="30" height="45" rx="8"/>
+          </g>
+          <rect x="0" y="316" width="600" height="44" fill="#121622"/>
+          <line x1="40" y1="316" x2="560" y2="316" stroke="#d4af37" stroke-width="2" opacity="0.6"/>
+        </svg>`,
+      cendere: `
+        <svg class="scenic-svg" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Cendere Bridge">
+          <defs>
+            <linearGradient id="cendereSky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#13315c"/>
+              <stop offset="65%" stop-color="#4e8098"/>
+              <stop offset="100%" stop-color="#e6ccb2"/>
+            </linearGradient>
+            <linearGradient id="cendereStone" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#e5c693"/>
+              <stop offset="100%" stop-color="#9c7344"/>
+            </linearGradient>
+          </defs>
+          <rect width="600" height="360" fill="url(#cendereSky)"/>
+          <path d="M0 175 L130 120 L260 170 L420 115 L600 165 L600 265 L0 265 Z" fill="#58735b" opacity="0.75"/>
+          <rect x="112" y="92" width="16" height="118" fill="#ebd2a4"/>
+          <rect x="106" y="86" width="28" height="8" fill="#d4af37"/>
+          <rect x="106" y="208" width="28" height="10" fill="#8c6239"/>
+          <path d="M40 202 L560 202 L560 268 L372 268 A72 72 0 0 0 228 268 L40 268 Z" fill="url(#cendereStone)" stroke="#6e4b27" stroke-width="2"/>
+          <path d="M222 268 A78 78 0 0 1 378 268" fill="none" stroke="#f2d6a2" stroke-width="5"/>
+          <rect x="0" y="264" width="600" height="96" fill="#1d5f7a"/>
+          <path d="M236 270 Q300 305 364 270 L388 360 L212 360 Z" fill="#2c7da0"/>
+          <line x1="250" y1="296" x2="350" y2="296" stroke="#a9d6e5" stroke-width="2" stroke-dasharray="14 8"/>
+          <line x1="238" y1="324" x2="362" y2="324" stroke="#a9d6e5" stroke-width="2" stroke-dasharray="20 10"/>
+        </svg>`,
+      karakus: `
+        <svg class="scenic-svg" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Karakus Tumulus">
+          <defs>
+            <linearGradient id="karakusSky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#162a4a"/>
+              <stop offset="55%" stop-color="#476c9b"/>
+              <stop offset="100%" stop-color="#f3d59b"/>
+            </linearGradient>
+            <linearGradient id="moundGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#cfa05e"/>
+              <stop offset="100%" stop-color="#7c562c"/>
+            </linearGradient>
+          </defs>
+          <rect width="600" height="360" fill="url(#karakusSky)"/>
+          <circle cx="115" cy="95" r="32" fill="#fff3c4" opacity="0.85"/>
+          <path d="M0 245 Q170 215 340 248 T600 235 L600 360 L0 360 Z" fill="#9c8254"/>
+          <path d="M180 280 Q330 118 480 280 Z" fill="url(#moundGrad)"/>
+          <rect x="148" y="138" width="18" height="122" fill="#e6c896" stroke="#8a6236" stroke-width="1.5"/>
+          <rect x="142" y="256" width="30" height="12" fill="#7c562c"/>
+          <path d="M157 112 L134 124 L148 130 L146 138 L168 138 L166 130 L180 124 Z" fill="#d4af37" stroke="#2b1d0e" stroke-width="1.2"/>
+          <rect x="0" y="274" width="600" height="86" fill="#5c4728"/>
+        </svg>`,
+      arsemia: `
+        <svg class="scenic-svg" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Arsemia Ancient City">
+          <defs>
+            <linearGradient id="arsemiaSky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#102542"/>
+              <stop offset="65%" stop-color="#3a6b7c"/>
+              <stop offset="100%" stop-color="#d8e2dc"/>
+            </linearGradient>
+          </defs>
+          <rect width="600" height="360" fill="url(#arsemiaSky)"/>
+          <polygon points="0,360 0,145 140,108 265,165 390,130 600,205 600,360" fill="#6d5943"/>
+          <polygon points="140,108 265,165 210,210 95,165" fill="#9c7e54"/>
+          <rect x="155" y="168" width="56" height="72" rx="6" fill="#2c2219" stroke="#d4af37" stroke-width="2"/>
+          <circle cx="183" cy="194" r="10" fill="#d4af37" opacity="0.85"/>
+          <path d="M168 232 L183 206 L198 232 Z" fill="#d4af37" opacity="0.75"/>
+          <path d="M0 285 Q210 245 410 290 T600 270 L600 360 L0 360 Z" fill="#2d5a27"/>
+          <circle cx="445" cy="268" r="24" fill="#3b7a34"/>
+          <circle cx="476" cy="274" r="28" fill="#265421"/>
+          <circle cx="510" cy="266" r="22" fill="#468c3d"/>
+        </svg>`,
+      yenikale: `
+        <svg class="scenic-svg" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Yeni Kale Fortress">
+          <defs>
+            <linearGradient id="kaleSky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0f203d"/>
+              <stop offset="60%" stop-color="#4a6fa5"/>
+              <stop offset="100%" stop-color="#f2cc8f"/>
+            </linearGradient>
+          </defs>
+          <rect width="600" height="360" fill="url(#kaleSky)"/>
+          <polygon points="150,360 250,150 375,115 475,190 520,360" fill="#5e4b36"/>
+          <polygon points="250,150 375,115 335,220 220,255" fill="#876b4b"/>
+          <g fill="#d9b37c" stroke="#4a3722" stroke-width="1.5">
+            <rect x="265" y="96" width="24" height="44"/>
+            <rect x="315" y="84" width="28" height="48"/>
+            <rect x="368" y="102" width="22" height="42"/>
+            <rect x="285" y="114" width="90" height="20"/>
+          </g>
+          <path d="M0 315 Q190 292 380 322 T600 308 L600 360 L0 360 Z" fill="#1b4965"/>
+          <path d="M0 295 Q160 278 300 302 T600 292 L600 316 L0 318 Z" fill="#3a6b35"/>
+        </svg>`,
+      seytankoprusu: `
+        <svg class="scenic-svg" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Seytan Koprusu Canyon">
+          <defs>
+            <linearGradient id="canyonSky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#14283d"/>
+              <stop offset="70%" stop-color="#3c6e71"/>
+              <stop offset="100%" stop-color="#d9ed92"/>
+            </linearGradient>
+          </defs>
+          <rect width="600" height="360" fill="url(#canyonSky)"/>
+          <polygon points="0,0 195,0 145,210 215,360 0,360" fill="#3d3126"/>
+          <polygon points="600,0 405,0 455,210 385,360 600,360" fill="#2c231b"/>
+          <path d="M135 168 L465 168 L465 198 L345 198 A45 45 0 0 0 255 198 L135 198 Z" fill="#c9a66b" stroke="#5c4324" stroke-width="2"/>
+          <polygon points="215,360 275,205 325,205 385,360" fill="#2b6cb0"/>
+          <line x1="298" y1="220" x2="294" y2="350" stroke="#bee3f8" stroke-width="2" stroke-dasharray="10 8"/>
+        </svg>`
+    };
+
+    const FOOD_SVG = {
+      cigkofte: `
+        <svg class="food-svg" viewBox="0 0 480 280" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Adiyaman Cig Kofte">
+          <defs>
+            <linearGradient id="cigBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#231916"/>
+              <stop offset="100%" stop-color="#47281d"/>
+            </linearGradient>
+            <radialGradient id="cigPlate" cx="50%" cy="55%" r="50%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="82%" stop-color="#f1ece1"/>
+              <stop offset="100%" stop-color="#d4af37"/>
+            </radialGradient>
+          </defs>
+          <rect width="480" height="280" fill="url(#cigBg)"/>
+          <ellipse cx="240" cy="154" rx="165" ry="96" fill="#0d0908" opacity="0.45"/>
+          <ellipse cx="240" cy="146" rx="158" ry="90" fill="url(#cigPlate)" stroke="#d4af37" stroke-width="2.5"/>
+          <ellipse cx="240" cy="146" rx="122" ry="66" fill="#faf6ee" stroke="#e2d9c8" stroke-width="1.5"/>
+          <path d="M128 148 Q112 122 142 114 Q162 104 178 124 Z" fill="#43aa8b"/>
+          <path d="M352 148 Q368 122 338 114 Q318 104 302 124 Z" fill="#52b788"/>
+          <g fill="#7c2d12" stroke="#9a3412" stroke-width="1.2">
+            <ellipse cx="182" cy="146" rx="22" ry="11" transform="rotate(-14 182 146)"/>
+            <ellipse cx="218" cy="134" rx="23" ry="11" transform="rotate(-6 218 134)"/>
+            <ellipse cx="256" cy="134" rx="23" ry="11" transform="rotate(6 256 134)"/>
+            <ellipse cx="294" cy="146" rx="22" ry="11" transform="rotate(14 294 146)"/>
+            <ellipse cx="202" cy="162" rx="22" ry="11" transform="rotate(8 202 162)"/>
+            <ellipse cx="240" cy="164" rx="24" ry="11.5"/>
+            <ellipse cx="276" cy="162" rx="22" ry="11" transform="rotate(-8 276 162)"/>
+          </g>
+          <circle cx="240" cy="112" r="9" fill="#450a0a"/>
+          <circle cx="228" cy="116" r="5" fill="#7f1d1d"/>
+          <circle cx="253" cy="116" r="5" fill="#7f1d1d"/>
+          <path d="M312 172 A18 14 0 0 1 344 176 L328 188 Z" fill="#facc15" stroke="#ca8a04" stroke-width="1.5"/>
+        </svg>`,
+      hitap: `
+        <svg class="food-svg" viewBox="0 0 480 280" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Hitap">
+          <defs>
+            <linearGradient id="hitapBg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1b263b"/>
+              <stop offset="100%" stop-color="#3a2618"/>
+            </linearGradient>
+            <linearGradient id="hitapCrust" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f3c677"/>
+              <stop offset="65%" stop-color="#d49341"/>
+              <stop offset="100%" stop-color="#8c4a19"/>
+            </linearGradient>
+          </defs>
+          <rect width="480" height="280" fill="url(#hitapBg)"/>
+          <ellipse cx="240" cy="152" rx="154" ry="86" fill="#d9c7a3" stroke="#b59e72" stroke-width="2"/>
+          <path d="M115 150 Q145 84 240 84 Q335 84 365 150 Q335 204 240 204 Q145 204 115 150 Z" fill="url(#hitapCrust)" stroke="#6e3512" stroke-width="2.5"/>
+          <path d="M148 148 Q185 112 240 112 Q295 112 332 148 Q295 178 240 178 Q185 178 148 148 Z" fill="#5c2317"/>
+          <g fill="#8c3b2b">
+            <circle cx="185" cy="144" r="7"/>
+            <circle cx="212" cy="136" r="8"/>
+            <circle cx="242" cy="142" r="9"/>
+            <circle cx="272" cy="137" r="7.5"/>
+            <circle cx="298" cy="146" r="6.5"/>
+            <circle cx="226" cy="156" r="7"/>
+            <circle cx="258" cy="155" r="7.5"/>
+          </g>
+          <circle cx="240" cy="126" r="4" fill="#52b788"/>
+          <circle cx="218" cy="148" r="3.5" fill="#74c69d"/>
+          <circle cx="266" cy="148" r="3.5" fill="#74c69d"/>
+        </svg>`,
+      besnitavasi: `
+        <svg class="food-svg" viewBox="0 0 480 280" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Besni Tavasi">
+          <defs>
+            <linearGradient id="tavaBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#1d2d44"/>
+              <stop offset="100%" stop-color="#3e2723"/>
+            </linearGradient>
+            <linearGradient id="tavaPan" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#9aa5b1"/>
+              <stop offset="100%" stop-color="#52606d"/>
+            </linearGradient>
+          </defs>
+          <rect width="480" height="280" fill="url(#tavaBg)"/>
+          <ellipse cx="240" cy="152" rx="156" ry="86" fill="url(#tavaPan)" stroke="#d4af37" stroke-width="2"/>
+          <ellipse cx="240" cy="146" rx="140" ry="74" fill="#6b271a"/>
+          <g fill="#4a1911" stroke="#8d4925" stroke-width="1.5">
+            <ellipse cx="176" cy="132" rx="22" ry="13"/>
+            <ellipse cx="224" cy="122" rx="24" ry="13"/>
+            <ellipse cx="276" cy="125" rx="23" ry="13"/>
+            <ellipse cx="195" cy="162" rx="24" ry="13"/>
+            <ellipse cx="250" cy="164" rx="25" ry="13"/>
+            <ellipse cx="304" cy="152" rx="20" ry="12"/>
+          </g>
+          <circle cx="152" cy="150" r="11" fill="#e63946"/>
+          <circle cx="294" cy="132" r="10" fill="#e63946"/>
+          <circle cx="225" cy="144" r="9.5" fill="#e63946"/>
+          <ellipse cx="202" cy="116" rx="14" ry="6" fill="#2d936c" transform="rotate(-12 202 116)"/>
+          <ellipse cx="274" cy="150" rx="14" ry="6" fill="#2d936c" transform="rotate(14 274 150)"/>
+          <circle cx="244" cy="112" r="6" fill="#f8f9fa"/>
+          <circle cx="164" cy="172" r="5.5" fill="#f8f9fa"/>
+        </svg>`,
+      iclikofte: `
+        <svg class="food-svg" viewBox="0 0 480 280" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Icli Kofte">
+          <defs>
+            <linearGradient id="icliBg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#14213d"/>
+              <stop offset="100%" stop-color="#3d2314"/>
+            </linearGradient>
+            <linearGradient id="bulgurShell" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#d98a3c"/>
+              <stop offset="100%" stop-color="#8c4a19"/>
+            </linearGradient>
+          </defs>
+          <rect width="480" height="280" fill="url(#icliBg)"/>
+          <ellipse cx="240" cy="152" rx="154" ry="86" fill="#ffffff" stroke="#d4af37" stroke-width="2.5"/>
+          <ellipse cx="240" cy="152" rx="120" ry="64" fill="#faf6ee"/>
+          <ellipse cx="168" cy="148" rx="30" ry="18" fill="url(#bulgurShell)" stroke="#5c2c0c" stroke-width="1.5"/>
+          <ellipse cx="312" cy="148" rx="30" ry="18" fill="url(#bulgurShell)" stroke="#5c2c0c" stroke-width="1.5"/>
+          <ellipse cx="240" cy="152" rx="36" ry="22" fill="url(#bulgurShell)" stroke="#5c2c0c" stroke-width="1.8"/>
+          <ellipse cx="240" cy="152" rx="24" ry="13" fill="#5e2115"/>
+          <circle cx="233" cy="151" r="5.5" fill="#c68b59"/>
+          <circle cx="247" cy="153" r="5" fill="#a47148"/>
+          <path d="M236 146 L244 156" stroke="#f0d675" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>`,
+      patlicandizmesi: `
+        <svg class="food-svg" viewBox="0 0 480 280" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Patlican Dizmesi">
+          <defs>
+            <linearGradient id="patBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#1b263b"/>
+              <stop offset="100%" stop-color="#3c1642"/>
+            </linearGradient>
+          </defs>
+          <rect width="480" height="280" fill="url(#patBg)"/>
+          <ellipse cx="240" cy="152" rx="154" ry="86" fill="#e9ecef" stroke="#d4af37" stroke-width="2"/>
+          <ellipse cx="240" cy="152" rx="134" ry="70" fill="#78290f"/>
+          <g>
+            <ellipse cx="155" cy="146" rx="22" ry="13" fill="#3c1642" stroke="#1b091e" stroke-width="1.5"/>
+            <ellipse cx="155" cy="146" rx="15" ry="8.5" fill="#6d2318"/>
+            <ellipse cx="198" cy="134" rx="22" ry="13" fill="#6d2318" stroke="#3d120b" stroke-width="1.5"/>
+            <ellipse cx="198" cy="134" rx="14" ry="8" fill="#3c1642"/>
+            <ellipse cx="240" cy="130" rx="22" ry="13" fill="#3c1642" stroke="#1b091e" stroke-width="1.5"/>
+            <ellipse cx="240" cy="130" rx="15" ry="8.5" fill="#6d2318"/>
+            <ellipse cx="282" cy="134" rx="22" ry="13" fill="#6d2318" stroke="#3d120b" stroke-width="1.5"/>
+            <ellipse cx="282" cy="134" rx="14" ry="8" fill="#3c1642"/>
+            <ellipse cx="325" cy="146" rx="22" ry="13" fill="#3c1642" stroke="#1b091e" stroke-width="1.5"/>
+            <ellipse cx="325" cy="146" rx="15" ry="8.5" fill="#6d2318"/>
+            <ellipse cx="198" cy="164" rx="22" ry="13" fill="#3c1642" stroke="#1b091e" stroke-width="1.5"/>
+            <ellipse cx="198" cy="164" rx="15" ry="8.5" fill="#6d2318"/>
+            <ellipse cx="240" cy="168" rx="22" ry="13" fill="#6d2318" stroke="#3d120b" stroke-width="1.5"/>
+            <ellipse cx="240" cy="168" rx="14" ry="8" fill="#3c1642"/>
+            <ellipse cx="282" cy="164" rx="22" ry="13" fill="#3c1642" stroke="#1b091e" stroke-width="1.5"/>
+            <ellipse cx="282" cy="164" rx="15" ry="8.5" fill="#6d2318"/>
+          </g>
+        </svg>`,
+      sillik: `
+        <svg class="food-svg" viewBox="0 0 480 280" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Sillik Tatlisi">
+          <defs>
+            <linearGradient id="sillikBg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1a2639"/>
+              <stop offset="100%" stop-color="#4a2c18"/>
+            </linearGradient>
+            <linearGradient id="syrupCrepe" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f7d070"/>
+              <stop offset="60%" stop-color="#e09f3e"/>
+              <stop offset="100%" stop-color="#b5651d"/>
+            </linearGradient>
+          </defs>
+          <rect width="480" height="280" fill="url(#sillikBg)"/>
+          <ellipse cx="240" cy="154" rx="154" ry="86" fill="#ffffff" stroke="#d4af37" stroke-width="2.5"/>
+          <ellipse cx="240" cy="154" rx="124" ry="64" fill="#fff8e7"/>
+          <ellipse cx="240" cy="162" rx="92" ry="38" fill="url(#syrupCrepe)" stroke="#9e5416" stroke-width="1.5"/>
+          <ellipse cx="240" cy="150" rx="86" ry="35" fill="#f9dc86" stroke="#b5651d" stroke-width="1.5"/>
+          <ellipse cx="240" cy="138" rx="80" ry="32" fill="url(#syrupCrepe)" stroke="#9e5416" stroke-width="1.5"/>
+          <path d="M175 136 Q210 124 242 138 T308 136" fill="none" stroke="#ffd166" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+          <g fill="#8d5524">
+            <circle cx="206" cy="134" r="6"/>
+            <circle cx="226" cy="142" r="5.5"/>
+            <circle cx="246" cy="132" r="6.5"/>
+            <circle cx="268" cy="140" r="5.5"/>
+            <circle cx="234" cy="126" r="5"/>
+          </g>
+          <circle cx="220" cy="132" r="3" fill="#52b788"/>
+          <circle cx="256" cy="133" r="3" fill="#52b788"/>
+          <circle cx="238" cy="145" r="3" fill="#52b788"/>
+        </svg>`
+    };
+
+    const SAUCE_SVG = {
+      nareksisi: `
+        <svg class="sauce-svg" viewBox="0 0 480 280" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Nar Eksisi">
+          <defs>
+            <linearGradient id="narBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#1b141a"/>
+              <stop offset="100%" stop-color="#3b1219"/>
+            </linearGradient>
+            <linearGradient id="garnetMolasses" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#a4133c"/>
+              <stop offset="60%" stop-color="#590d22"/>
+              <stop offset="100%" stop-color="#2b0610"/>
+            </linearGradient>
+          </defs>
+          <rect width="480" height="280" fill="url(#narBg)"/>
+          <ellipse cx="240" cy="162" rx="156" ry="82" fill="#f5efe6" stroke="#d4af37" stroke-width="2"/>
+          <path d="M138 92 L182 92 L192 122 Q204 152 192 184 Q182 204 160 204 Q138 204 128 184 Q116 152 128 122 Z" fill="url(#garnetMolasses)" stroke="#ff758f" stroke-width="1.6"/>
+          <path d="M144 128 Q138 154 146 182" fill="none" stroke="#ffb3c1" stroke-width="3" stroke-linecap="round" opacity="0.65"/>
+          <path d="M180 102 Q222 104 248 148" fill="none" stroke="#800f2f" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="256" cy="162" r="5" fill="#a4133c"/>
+          <circle cx="264" cy="176" r="3.5" fill="#c9184a"/>
+          <circle cx="315" cy="162" r="32" fill="#c9184a" stroke="#590d22" stroke-width="2.5"/>
+          <circle cx="315" cy="162" r="24" fill="#fff0f3"/>
+          <g fill="#a4133c">
+            <circle cx="308" cy="155" r="4"/>
+            <circle cx="318" cy="153" r="4"/>
+            <circle cx="323" cy="163" r="4"/>
+            <circle cx="313" cy="168" r="4"/>
+            <circle cx="305" cy="165" r="3.5"/>
+          </g>
+          <circle cx="358" cy="174" r="20" fill="#800f2f" stroke="#ff758f" stroke-width="1.2"/>
+        </svg>`,
+      isotbiber: `
+        <svg class="sauce-svg" viewBox="0 0 480 280" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Isot ve Aci Biber Sosu">
+          <defs>
+            <linearGradient id="isotBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#18181b"/>
+              <stop offset="100%" stop-color="#3f1616"/>
+            </linearGradient>
+            <radialGradient id="isotDish" cx="50%" cy="50%" r="55%">
+              <stop offset="0%" stop-color="#3b0d11"/>
+              <stop offset="78%" stop-color="#22080a"/>
+              <stop offset="100%" stop-color="#d4af37"/>
+            </radialGradient>
+          </defs>
+          <rect width="480" height="280" fill="url(#isotBg)"/>
+          <ellipse cx="240" cy="154" rx="142" ry="78" fill="url(#isotDish)" stroke="#d4af37" stroke-width="2.2"/>
+          <g fill="#2b090e" stroke="#6b1622" stroke-width="0.9">
+            <ellipse cx="195" cy="146" rx="14" ry="7" transform="rotate(-18 195 146)"/>
+            <ellipse cx="218" cy="138" rx="16" ry="7.5" transform="rotate(10 218 138)"/>
+            <ellipse cx="244" cy="142" rx="17" ry="8" transform="rotate(-8 244 142)"/>
+            <ellipse cx="272" cy="148" rx="15" ry="7" transform="rotate(16 272 148)"/>
+            <ellipse cx="210" cy="160" rx="15" ry="7" transform="rotate(12 210 160)"/>
+            <ellipse cx="238" cy="164" rx="17" ry="7.5" transform="rotate(-5 238 164)"/>
+            <ellipse cx="266" cy="162" rx="14" ry="7" transform="rotate(-14 266 162)"/>
+          </g>
+          <path d="M118 176 Q142 152 176 164 Q154 184 118 176 Z" fill="#e63946" stroke="#9b2226" stroke-width="1.5"/>
+          <path d="M118 176 L104 182" stroke="#52b788" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M312 168 Q344 146 374 162 Q346 182 312 168 Z" fill="#ef233c" stroke="#9b2226" stroke-width="1.5"/>
+          <path d="M374 162 L388 156" stroke="#52b788" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>`,
+      yogurttahin: `
+        <svg class="sauce-svg" viewBox="0 0 480 280" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Sarimsakli Yogurt ve Tahinli Sos">
+          <defs>
+            <linearGradient id="creamyBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#162238"/>
+              <stop offset="100%" stop-color="#3b2f23"/>
+            </linearGradient>
+            <linearGradient id="tahiniSwirl" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#e9c46a"/>
+              <stop offset="100%" stop-color="#c89d54"/>
+            </linearGradient>
+          </defs>
+          <rect width="480" height="280" fill="url(#creamyBg)"/>
+          <ellipse cx="240" cy="154" rx="152" ry="82" fill="#e2d5c1" stroke="#d4af37" stroke-width="2.2"/>
+          <ellipse cx="240" cy="150" rx="126" ry="62" fill="#faf7f0"/>
+          <path d="M168 148 Q210 124 244 148 T316 146" fill="none" stroke="url(#tahiniSwirl)" stroke-width="12" stroke-linecap="round" opacity="0.88"/>
+          <path d="M138 172 Q132 152 146 142 Q160 152 154 172 Z" fill="#fffdf9" stroke="#cbd5e1" stroke-width="1.4"/>
+          <path d="M332 168 Q327 150 339 141 Q351 150 346 168 Z" fill="#fffdf9" stroke="#cbd5e1" stroke-width="1.4"/>
+          <g fill="#b08968">
+            <circle cx="204" cy="136" r="2.5"/>
+            <circle cx="222" cy="162" r="2.5"/>
+            <circle cx="258" cy="138" r="2.5"/>
+            <circle cx="276" cy="160" r="2.5"/>
+            <circle cx="242" cy="166" r="2.5"/>
+          </g>
+          <circle cx="240" cy="148" r="5" fill="#43aa8b"/>
+          <circle cx="226" cy="144" r="3.5" fill="#52b788"/>
+          <circle cx="255" cy="152" r="3.5" fill="#52b788"/>
+        </svg>`
+    };
+
+    const DISHES = [
+      { id: "cigkofte", titleKey: "f1", descKey: "f1d" },
+      { id: "hitap", titleKey: "f2", descKey: "f2d" },
+      { id: "besnitavasi", titleKey: "f3", descKey: "f3d" },
+      { id: "iclikofte", titleKey: "f4", descKey: "f4d" },
+      { id: "patlicandizmesi", titleKey: "f5", descKey: "f5d" },
+      { id: "sillik", titleKey: "f6", descKey: "f6d" }
+    ];
+
+    const SAUCES = [
+      { id: "nareksisi", titleKey: "s1", descKey: "s1d" },
+      { id: "isotbiber", titleKey: "s2", descKey: "s2d" },
+      { id: "yogurttahin", titleKey: "s3", descKey: "s3d" }
+    ];
+
+    const MONUMENTS = [
+      {
+        id: "nemrut",
+        lat: 37.9806, lon: 38.7408,
+        tr: {
+          name: "Nemrut Dağı Ören Yeri",
+          loc: "2150m Rakım • Kommagene",
+          desc: "Kommagene Kralı I. Antiokhos'un yaptırdığı dev tanrı ve kral heykelleri ile ünlü UNESCO mirası.",
+          audio: "Nemrut Dağı Ören Yeri, 2150 metre yükseklikte Kommagene Krallığı'nın görkemini yaşatan eşsiz bir açık hava mirası. Kral Birinci Antiokhos, Yunan ve Pers kültürlerini bir araya getirerek kendisini tanrılarla yan yana gösteren dev heykeller ve kabartmalar yaptırmış. Özellikle gün doğarken ve batarken taş heykellerin üzerinde oluşan ışık, burayı bambaşka bir atmosfere taşıyor."
+        },
+        en: {
+          name: "Mount Nemrut Ruins",
+          loc: "2150m Altitude • Commagene",
+          desc: "UNESCO heritage site famous for colossal statues of gods and King Antiochus I.",
+          audio: "Mount Nemrut Ruins stand at 2,150 meters above sea level as a remarkable open-air heritage site of the Commagene Kingdom. King Antiochus I blended Greek and Persian traditions here, commissioning colossal stone statues and reliefs beside the artificial tumulus. At sunrise and sunset, shifting light across the monumental heads creates one of the most iconic views in Anatolia."
+        },
+        de: {
+          name: "Nemrut Dağı",
+          loc: "2150m Höhe • Kommagene",
+          desc: "UNESCO-Weltkulturerbe mit riesigen Götter- und Königstatuen aus der Kommagene-Zeit.",
+          audio: "Der Nemrut Dağı liegt auf 2150 Metern Höhe und zählt zu den eindrucksvollsten Stätten des Königreichs Kommagene. König Antiochos der Erste ließ hier gewaltige Statuen und Reliefs errichten, die griechische und persische Traditionen miteinander verbinden. Besonders bei Sonnenaufgang und Sonnenuntergang entsteht rund um den Grabhügel eine ganz besondere Stimmung."
+        },
+        fr: {
+          name: "Mont Nemrut",
+          loc: "2150m d'altitude • Commagène",
+          desc: "Site classé à l'UNESCO célèbre pour ses statues monumentales et son panorama.",
+          audio: "Le mont Nemrut s'élève à 2150 mètres d'altitude et témoigne de l'histoire du royaume de Commagène. Le roi Antiochos premier y a fait ériger des statues colossales et des bas-reliefs mêlant influences grecques et perses. Au lever comme au coucher du soleil, la lumière sur le tumulus offre un spectacle saisissant."
+        },
+        ar: {
+          name: "جبل نمرود الأثري",
+          loc: "ارتفاع 2150م • كوماجين",
+          desc: "موقع تراث عالمي لليونسكو يضم تماثيل ضخمة وإطلالة شهيرة على شروق وغروب الشمس.",
+          audio: "يقع جبل نمرود الأثري على ارتفاع 2150 متراً ويُعد من أبرز معالم مملكة كوماجين التاريخية. أمر الملك أنطيوخوس الأول بنحت تماثيل حجرية ضخمة ونقوش تجمع بين التقاليد اليونانية والفارسية حول التل الجنائزي، ومع شروق الشمس وغروبها تتشكل إطلالة آسرة لا تُنسى."
+        },
+        es: {
+          name: "Monte Nemrut",
+          loc: "2150m de altitud • Comagene",
+          desc: "Patrimonio de la UNESCO famoso por sus estatuas colosales y vistas del horizonte.",
+          audio: "El monte Nemrut se alza a 2150 metros de altitud y representa uno de los legados más impresionantes del reino de Comagene. El rey Antíoco primero mandó esculpir estatuas colosales y relieves que unen tradiciones griegas y persas junto al túmulo. Al amanecer y al atardecer, la luz sobre las esculturas crea un paisaje inolvidable."
+        },
+        ku: {
+          name: "Cihê Şûnwarî yê Çiyayê Nemrûdê",
+          loc: "Bilindahî 2150m • Kommagene",
+          desc: "Mîrateya UNESCOyê ya bi peykerên mezin ên xwedawend û qralên Kommageneyê navdar e.",
+          audio: "Cihê Şûnwarî yê Çiyayê Nemrûdê li bilindahiya 2150 metreyan mîrateyeke bêhempa ya Padîşahiya Kommageneyê ye. Qral Antîoxosê Yekem li vê qada pîroz peykerên kevirî yên mezin û neqşên ku çandên Yewnan û Faris li hev tînin çêkirine. Bi taybetî li ber hilatina rojê û rojavabûnê, ronahiya li ser peykeran atmosferê pir xweş û balkêş dike."
+        },
+        ja: {
+          name: "ネムルート山遺跡",
+          loc: "標高2150m • コンマゲネ",
+          desc: "巨大な神々や王の像で知られるユネスコ世界遺産の遺跡。",
+          audio: "ネムルート山遺跡は標高2150メートルに位置する、コンマゲネ王国の壮大な歴史を伝える屋外遺産です。アンティオコス1世はギリシャとペルシャの文化を融合させた巨大な石像やレリーフを築きました。日の出や日没時には、墳丘のそばに並ぶ石像に光が差し込み、幻想的な景観が広がります。"
+        },
+        zh: {
+          name: "内姆鲁特山遗址",
+          loc: "海拔2150米 • 科马吉内",
+          desc: "以巨型众神与国王雕像闻名的联合国教科文组织世界文化遗产。",
+          audio: "内姆鲁特山遗址坐落于海拔2150米处，是展现科马吉内王国辉煌历史的重要露天遗迹。安条克一世在此融合了希腊与波斯文化传统，在封土堆旁建造了宏伟的石雕与浮雕。每当旭日东升或夕阳西下时，光影洒在巨型雕像上，呈现出令人难忘的壮丽景象。"
+        }
+      },
+      {
+        id: "cendere",
+        lat: 37.9347, lon: 38.8675,
+        tr: {
+          name: "Cendere Köprüsü",
+          loc: "Kâhta Çayı Üzeri • Roma Dönemi",
+          desc: "Yaklaşık 1800 yıllık, tek kemerli ve kesme taşlardan örülmüş tarihi Roma köprüsü.",
+          audio: "Cendere Köprüsü, Kâhta Çayı üzerinde uzanan ve Roma taş ustalığının günümüze ulaşan en etkileyici yapılarından biri. Yaklaşık 1800 yıl önce iri kesme taşlarla harçsız örülen tek kemeri, vadiyle kurduğu uyumla dikkat çekiyor. Yanındaki sütunlar ise köprünün yapım tarihini ve komutanların anısını bugüne taşıyor."
+        },
+        en: {
+          name: "Cendere Bridge",
+          loc: "Over Kahta Stream • Roman Era",
+          desc: "Around 1,800-year-old single-arch Roman stone bridge built with massive dressed blocks.",
+          audio: "Cendere Bridge spans the Kahta stream and stands as one of the most impressive surviving examples of Roman stone engineering. Built roughly 1,800 years ago from heavy dressed stone blocks without mortar, its single wide arch blends naturally into the rocky valley. Its accompanying columns commemorate the imperial family and Roman legion associated with its construction."
+        },
+        de: {
+          name: "Cendere-Brücke",
+          loc: "Am Kahta-Bach • Römerzeit",
+          desc: "Rund 1800 Jahre alte römische Bogenbrücke aus großen Werksteinen.",
+          audio: "Die Cendere-Brücke überspannt den Kahta-Bach und gehört zu den bemerkenswertesten Steinbauwerken der Römerzeit. Vor rund 1800 Jahren ohne Mörtel aus schweren Werksteinen errichtet, fügt sich ihr einzelner Bogen harmonisch in die Tal Landschaft ein. Die Säulen am Zugang erinnern an die römische Baugeschichte des Übergangs."
+        },
+        fr: {
+          name: "Pont de Cendere",
+          loc: "Rivière Kahta • Époque romaine",
+          desc: "Pont romain à arche unique vieux d'environ 1800 ans en pierres de taille.",
+          audio: "Le pont de Cendere enjambe la rivière de Kahta et illustre la maîtrise architecturale romaine. Construit il y a environ 1800 ans en blocs de pierre taillée assemblés sans mortier, son arche unique s'intègre avec force au décor naturel. Les colonnes à ses extrémités rappellent l'histoire impériale liée à cet ouvrage."
+        },
+        ar: {
+          name: "جسر جندري الأثري",
+          loc: "نهر كاهتا • العصر الروماني",
+          desc: "جسر روماني حجري بقوس واحد يمتد لنحو ألفي عام فوق مجرى المياه.",
+          audio: "يمتد جسر جندري فوق نهر كاهتا ويُعد من أروع نماذج الهندسة الحجرية الرومانية التي بقيت حتى اليوم. بُني قبل نحو 1800 عام من كتل حجرية ضخمة منحوتة بدقة دون مونة، ويجمع قوسه الواحد بين المتانة والانسجام مع طبيعة الوادي، بينما توثق الأعمدة المحيطة به تاريخ إنشائه."
+        },
+        es: {
+          name: "Puente de Cendere",
+          loc: "Río Kahta • Época romana",
+          desc: "Puente romano de un solo arco con unos 1800 años de historia.",
+          audio: "El puente de Cendere cruza el arroyo de Kahta y destaca como una obra maestra de la ingeniería romana en piedra. Levantado hace unos 1800 años con grandes bloques tallados sin mortero, su único arco se integra con fuerza en el valle. Las columnas junto al puente evocan la memoria imperial de su construcción."
+        },
+        ku: {
+          name: "Pira Cendereyê",
+          loc: "Li Ser Çemê Kaxtayê • Serdema Romayê",
+          desc: "Pira dîrokî ya Romayê ya nêzîkî 1800 salî ku bi kevirên birî û kemereke tenê hatiye çêkirin.",
+          audio: "Pira Cendereyê li ser Çemê Kaxtayê dirêj dibe û yek ji avahiyên kevirî yên herî balkêş ên endezyariya Romayê ye. Ev pira yek-kemerî ku nêzîkî 1800 sal berê bêyî herî bi blokên kevirên mezin hatiye lêkirin, hem bi xurtbûna xwe hem jî bi lihevhatina xwe ya bi gelî re balê dikişîne. Stûnên li berê jî bîranîna çêkirina pirê diparêzin."
+        },
+        ja: {
+          name: "ジェンデレ橋",
+          loc: "カフタ川 • ローマ時代",
+          desc: "約1800年の歴史を持つ、切り石造りの単アーチ式ローマ橋。",
+          audio: "ジェンデレ橋はカフタ川にかかる、ローマ時代の石造建築技術を今に伝える代表的な橋です。約1800年前にモルタルを使わず巨大な切り石を組み上げて築かれた単一のアーチは、堅牢さと渓谷の景観美を兼ね備えています。橋のたもとに立つ柱も、当時の建設の歴史を物語っています。"
+        },
+        zh: {
+          name: "詹代雷桥",
+          loc: "卡赫塔河上 • 罗马时期",
+          desc: "约有1800年历史、由巨型切石砌成的单拱古罗马石桥。",
+          audio: "詹代雷桥横跨卡赫塔河，是罗马石造建筑工程留存至今的杰出代表之一。这座单拱桥约在1800年前不用砂浆、仅以厚重切石拼接而成，既坚固又与峡谷自然风貌相融合，两端的石柱也见证了它的建造历史。"
+        }
+      },
+      {
+        id: "karakus",
+        lat: 37.8969, lon: 38.7950,
+        tr: {
+          name: "Karakuş Tümülüsü",
+          loc: "Kommagene Kraliyet Mezarı",
+          desc: "Kommagene kraliyet ailesindeki kadınlara ait anıt mezar ve üzerindeki kartal sütunu.",
+          audio: "Karakuş Tümülüsü, Kommagene kraliyet kadınları için inşa edilmiş anıtsal bir mezar tepesi. Adını, sütunlarından birinin ucundaki kartal heykelinden alıyor. Geniş bozkır manzarasına bakan konumuyla Kommagene rotasındaki ilk güçlü duraklardan biri."
+        },
+        en: {
+          name: "Karakuş Tumulus",
+          loc: "Commagene Royal Tomb",
+          desc: "Royal burial mound for Commagene women topped by an eagle column.",
+          audio: "Karakuş Tumulus is a monumental royal burial mound built for the women of the Commagene dynasty. Its name comes from the eagle sculpture crowning one of its columns. Set against wide highland views, the mound and its standing column mark an essential first stop along the Commagene route."
+        },
+        de: {
+          name: "Karakuş-Tumulus",
+          loc: "Königsgrab • Kommagene",
+          desc: "Königlicher Grabhügel der Kommagene mit einer Adlersäule.",
+          audio: "Der Karakuş-Tumulus ist ein monumentaler Grabhügel für die Frauen des Königshauses von Kommagene. Seinen Namen verdankt er der Adlerskulptur auf einer der Säulen. In offener Landschaft gelegen, bildet der Hügel einen eindrucksvollen Auftakt zur Erkundung der Kommagene-Stätten."
+        },
+        fr: {
+          name: "Tumulus de Karakuş",
+          loc: "Sépulture royale • Commagène",
+          desc: "Tumulus royal de Commagène surmonté d'une colonne à l'aigle.",
+          audio: "Le tumulus de Karakuş est un monument funéraire royal édifié pour les femmes de la dynastie de Commagène. Il tire son nom de la sculpture d'aigle qui surmonte l'une de ses colonnes. Ouvert sur de vastes horizons, ce site constitue une étape emblématique du circuit de Commagène."
+        },
+        ar: {
+          name: "تل قراقوش الأثري",
+          loc: "مدفن ملكي • كوماجين",
+          desc: "مدفن ملكي لكوماجين يعلوه عمود يحمل تمثال النسر.",
+          audio: "يُعد تل قراقوش مدفناً ملكياً ضخماً أُقيم لنساء الأسرة الحاكمة في مملكة كوماجين، وقد سُمي بهذا الاسم نسبة إلى تمثال النسر الذي يعلو أحد أعمدته. وبفضل موقعه المفتوح وإطلالته الواسعة، يشكل محطة تعريفية مميزة في مسار آثار كوماجين."
+        },
+        es: {
+          name: "Túmulo de Karakuş",
+          loc: "Tumba real • Comagene",
+          desc: "Monumento funerario real de Comagene coronado por una columna con un águila.",
+          audio: "El túmulo de Karakuş es un monumento funerario real construido para las mujeres de la dinastía de Comagene. Debe su nombre a la escultura de águila que corona una de sus columnas. Rodeado de amplios horizontes, marca una parada esencial en el recorrido por Comagene."
+        },
+        ku: {
+          name: "Tûmûlûsa Qereqûşê",
+          loc: "Gora Qraliyetê ya Kommageneyê",
+          desc: "Gora bîrdariyê ya jinên malbata qraliyetê ya Kommageneyê û stûna bi şiklê bazê li ser wê.",
+          audio: "Tûmûlûsa Qereqûşê girekî gorê yê mezin e ku ji bo jinên qraliyetê yên Padîşahiya Kommageneyê hatiye çêkirin. Navê xwe ji peykerê bazê yê li ser yek ji stûnan digire. Bi cihê xwe yê bilind û bermahiyên stûnan, wekî rawestgeheke girîng a rêwîtiya Kommageneyê pêşwazî li mêvanan dike."
+        },
+        ja: {
+          name: "カラクシュ墳丘墓",
+          loc: "コンマゲネ王家の墓",
+          desc: "コンマゲネ王家の女性たちのために築かれた墳丘墓と鷲の柱。",
+          audio: "カラクシュ墳丘墓は、コンマゲネ王国の王家女性たちのために築かれた記念碑的な墳丘墓です。柱の上に鷲の彫刻が載っていることからこの名で呼ばれています。広々とした高地に建ち、コンマゲネの史跡巡りにおける重要な最初の見どころの一つとなっています。"
+        },
+        zh: {
+          name: "卡拉库什王室封土墓",
+          loc: "科马吉内王室墓葬",
+          desc: "为科马吉内王室女性建造的纪念封土墓，以顶部的鹰雕石柱为特色。",
+          audio: "卡拉库什封土墓是为科马吉内王国王室女性建造的宏大墓葬遗迹，因其石柱顶端雕有雄鹰而得名。它矗立在开阔的高地上，周围留存着石柱遗迹，是探访科马吉内古迹路线上的重要一站。"
+        }
+      },
+      {
+        id: "arsemia",
+        lat: 37.9553, lon: 38.8572,
+        tr: {
+          name: "Arsemia Antik Kenti",
+          loc: "Eski Kale • Kommagene Yazlık Başkenti",
+          desc: "Kommagene krallarının yazlık başkenti ve törensel kutsal alanı; kaya kabartmalarıyla bilinir.",
+          audio: "Arsemia Antik Kenti, Kommagene krallarının yazlık başkenti ve önemli tören alanlarından biri. Kayalara işlenmiş kabartmalar, eski yazıtlar ve teras kalıntıları dönemin yaşamını anlatıyor. Doğa ile iç içe uzanan bu alan, Kommagene geçmişini yakından görmek için harika bir durak."
+        },
+        en: {
+          name: "Arsemia Ancient City",
+          loc: "Eski Kale • Summer Capital",
+          desc: "Summer capital of Commagene and sacred ceremonial site known for rock reliefs.",
+          audio: "Arsemia Ancient City served as the summer capital and ceremonial center of the Commagene kings. Carved rock reliefs, inscriptions, and terrace remains reveal how royal authority and ritual life were shaped in this rugged setting. Surrounded by natural greenery and cliffs, it offers a vivid glimpse into ancient Commagene."
+        },
+        de: {
+          name: "Antike Stadt Arsemia",
+          loc: "Eski Kale • Sommerresidenz",
+          desc: "Sommerresidenz von Kommagene mit historischen Felsreliefs.",
+          audio: "Die antike Stadt Arsemia diente den Königen von Kommagene als Sommerresidenz und wichtiges zeremonielles Zentrum. Felsreliefs, Inschriften und Terrassenreste vermitteln ein lebendiges Bild der damaligen Herrschaft und Kultpraxis. Inmitten der Natur lädt der Ort zu einer intensiven Zeitreise ein."
+        },
+        fr: {
+          name: "Cité antique d'Arsemia",
+          loc: "Eski Kale • Capitale d'été",
+          desc: "Capitale d'été de la Commagène célèbre pour ses reliefs rupestres.",
+          audio: "La cité antique d'Arsemia était la capitale d'été et un haut lieu cérémoniel des rois de Commagène. Ses reliefs sculptés dans la roche, ses inscriptions et ses vestiges éclairent l'organisation politique et sacrée du royaume. Au cœur d'un paysage escarpé, elle offre un témoignage précieux de l'Antiquité."
+        },
+        ar: {
+          name: "مدينة أرساميا الأثرية",
+          loc: "العاصمة الصيفية لكوماجين",
+          desc: "العاصمة الصيفية لمملكة كوماجين وموقع احتفالي يضم نقوشاً صخرية.",
+          audio: "برزت مدينة أرساميا الأثرية بوصفها العاصمة الصيفية ومركز الاحتفالات والطقوس لملوك كوماجين. وتُظهر النقوش الصخرية والكتابات وبقايا المدرجات ملامح الحياة الملكية والدينية في ذلك العصر، وسط طبيعة جبلية تضفي على المكان طابعاً تاريخياً غنياً."
+        },
+        es: {
+          name: "Ciudad antigua de Arsemia",
+          loc: "Eski Kale • Capital de verano",
+          desc: "Capital de verano de Comagene conocida por sus relieves en la roca.",
+          audio: "La ciudad antigua de Arsemia fue capital de verano y centro ceremonial de los reyes de Comagene. Sus relieves tallados en la roca, inscripciones y restos de terrazas muestran la vida política y ritual de la época. Enclavada entre rocas y vegetación, permite acercarse de forma directa a la historia de Comagene."
+        },
+        ku: {
+          name: "Bajarê Antîk ê Arsemîayê",
+          loc: "Eski Kale • Paytexta Havînê ya Kommageneyê",
+          desc: "Paytexta havînê û qada merasîmê ya qralên Kommageneyê; bi neqşên li ser zinaran tê zanîn.",
+          audio: "Bajarê Antîk ê Arsemîayê wekî paytexta havînê û navendeke girîng a merasîmên olî yên qralên Kommageneyê derdikeve pêş. Neqşên li ser zinaran, nivîsar û bermahiyên terasan rewşa siyasî û çandî ya wê demê ronî dikin. Ev cihê dîrokî yê di nava xwezayê de ji bo dîtina dîroka Kommageneyê cihê herî xweş e."
+        },
+        ja: {
+          name: "アルセミア古代都市遺跡",
+          loc: "エスキ・カレ • コンマゲネの夏の都",
+          desc: "コンマゲネ王国の夏の都であり、岩壁のレリーフで知られる祭祀の地。",
+          audio: "アルセミア古代都市遺跡は、コンマゲネ王国の王たちが夏の都かつ重要な儀式の場として用いた史跡です。岩壁に刻まれたレリーフや碑文、段々状の遺構は当時の王権や信仰のあり方を伝えています。豊かな自然と岩肌に囲まれ、古代コンマゲネの歴史を肌で感じられる場所です。"
+        },
+        zh: {
+          name: "阿尔塞米亚古城遗址",
+          loc: "埃斯基卡莱 • 科马吉内夏都",
+          desc: "科马吉内国王的夏都与祭祀圣地，以岩壁浮雕闻名。",
+          audio: "阿尔塞米亚古城曾是科马吉内国王的夏都和重要礼仪圣地。岩壁上雕刻的浮雕、铭文与阶地遗迹，折射出当时的政治制度与祭祀文化。这片古迹与自然山林相伴，是近距离感受科马吉内历史的绝佳去处。"
+        }
+      },
+      {
+        id: "yenikale",
+        lat: 37.9436, lon: 38.8644,
+        tr: {
+          name: "Yeni Kale (Vahank Kalesi)",
+          loc: "Kâhta Çayı Kıyısı • Ortaçağ",
+          desc: "Vadinin üzerinde yükselen, sarp kayalıklara kurulmuş stratejik kale ve burç kalıntıları.",
+          audio: "Yeni Kale, Kâhta Çayı vadisine bakan sarp kayalıkların üzerinde yükselen etkileyici bir kale. Kalın surları, burçları ve kayaya yaslanan yapısıyla vadideki geçişleri korumak için kurulmuş. Üst kısımlarına çıkıldığında vadi ve çevre tepeler oldukça güzel görünüyor."
+        },
+        en: {
+          name: "Yeni Kale (Vahank Castle)",
+          loc: "Kahta Valley • Medieval",
+          desc: "Strategic cliffside fortress overlooking the Kahta river valley with towers and passages.",
+          audio: "Yeni Kale rises atop a steep rocky crag commanding views over the Kahta river valley. Its fortified walls, towers, and cliffside layout were built to guard strategic routes through the valley. From its upper levels, the fortress rewards visitors with sweeping views of the surrounding cliffs and river."
+        },
+        de: {
+          name: "Yeni Kale (Burg Vahank)",
+          loc: "Kahta-Tal • Mittelalter",
+          desc: "Strategische Felsenburg oberhalb des Kahta-Tals mit Türmen.",
+          audio: "Yeni Kale thront auf einem steilen Felsen oberhalb des Kahta-Tals und prägt die Landschaft weithin. Mauern, Türme und geschützte Zugänge dienten einst der Kontrolle wichtiger Talwege. Von oben eröffnet sich ein eindrucksvoller Blick über das Tal und die umliegenden Hänge."
+        },
+        fr: {
+          name: "Forteresse de Yeni Kale",
+          loc: "Vallée de Kahta • Médiéval",
+          desc: "Forteresse perchée dominant la vallée de la rivière Kahta.",
+          audio: "Yeni Kale se dresse sur un éperon rocheux escarpé dominant la vallée de la rivière Kahta. Ses remparts, ses tours et son implantation défensive permettaient de surveiller les passages de la vallée. Depuis les hauteurs du site, la vue embrasse les falaises et le paysage environnant."
+        },
+        ar: {
+          name: "قلعة يني كالي",
+          loc: "وادي كاهتا • العصور الوسطى",
+          desc: "قلعة صخرية مطلة على وادي نهر كاهتا تضم أبراجاً وممرات دفاعية.",
+          audio: "تتربع قلعة يني كالي على قمة صخرية شاهقة مطلة على وادي نهر كاهتا، وتُعد من أبرز الحصون الدفاعية في المنطقة. وقد استُخدمت أسوارها وأبراجها وممراتها الصخرية لمراقبة الطرق الحيوية في الوادي، كما تمنح زوارها إطلالة واسعة على المرتفعات المحيطة."
+        },
+        es: {
+          name: "Castillo de Yeni Kale",
+          loc: "Valle de Kahta • Medieval",
+          desc: "Fortaleza en lo alto del acantilado con vistas al valle del río Kahta.",
+          audio: "Yeni Kale se alza sobre un peñasco escarpado que domina el valle del río Kahta. Sus murallas, torres y pasos defendidos protegían las rutas del valle en épocas pasadas. Desde lo alto de la fortaleza se obtienen amplias vistas de los acantilados y del entorno natural."
+        },
+        ku: {
+          name: "Kela Nû (Kela Vahankê)",
+          loc: "Beravê Çemê Kaxtayê • Serdema Navîn",
+          desc: "Keleke stratejîk û bermahiyên bircan ku li ser zinaran li ser gelî bilind dibe.",
+          audio: "Kela Nû li ser zinarekî asê ku li geliyê Çemê Kaxtayê dinêre avahiyeke parastinê ya pir balkêş e. Bi dîwarên xwe yên stûr, birc û mîmariya xwe ya li ser zinaran ji bo kontrolkirina rêyên derbasbûnê yên gelî hatiye bikaranîn. Ji bilindahiya kelê dîmeneke xweşik a gelî û girên derdorê xuya dike."
+        },
+        ja: {
+          name: "イェニ・カレ城塞",
+          loc: "カフタ渓谷 • 中世",
+          desc: "渓谷を見下ろす険しい岩山に築かれた戦略的な城塞と塔の遺構。",
+          audio: "イェニ・カレ城塞は、カフタ川の渓谷を見下ろす急峻な岩山の上にそびえる堅固な防衛施設です。厚い城壁や塔、岩盤に沿った構造は渓谷の要衝を守る役割を果たしていました。高所からは渓谷や周囲の山々を一望するダイナミックな景色が楽しめます。"
+        },
+        zh: {
+          name: "耶尼卡莱城堡",
+          loc: "卡赫塔河谷 • 中世纪",
+          desc: "坐落于陡峭岩崖之上、俯瞰河谷的战略要塞与塔楼遗迹。",
+          audio: "耶尼卡莱城堡耸立在俯瞰卡赫塔河谷的险峻岩壁之上，是一座极具气势的防御要塞。厚实的城墙、塔楼以及依岩而建的结构曾用于把守河谷通道；登高远眺，河谷与周围群山的壮阔风光尽收眼底。"
+        }
+      },
+      {
+        id: "seytankoprusu",
+        lat: 37.9462, lon: 38.8598,
+        tr: {
+          name: "Şeytan Köprüsü",
+          loc: "Kanyon Geçişi • Doğa & Tarih",
+          desc: "Sarp kanyon duvarları arasında yer alan, doğa yürüyüşçülerinin gözdesi taş köprü noktası.",
+          audio: "Şeytan Köprüsü, sarp kayalıklar ve kanyon dokusu arasında doğa ile tarihin buluştuğu özel bir nokta. Dar boğazı geçen taş kemeri ve yüksek kaya duvarları yürüyüş rotasına keyif ve heyecan katıyor. Bölgeyi gezerken doğanın gücünü hissedebileceğin duraklardan biri."
+        },
+        en: {
+          name: "Devil's Bridge (Şeytan Köprüsü)",
+          loc: "Canyon Crossing • Nature & History",
+          desc: "Dramatic stone bridge spot along the canyon trail popular with hikers.",
+          audio: "Şeytan Köprüsü sits amid steep canyon walls where dramatic geology meets historic passageways. Spanning a narrow gorge, its stone arch and surrounding cliffs give the trail a sense of adventure and scenic contrast. It is a memorable stop for travelers drawn to rugged canyon landscapes."
+        },
+        de: {
+          name: "Şeytan Köprüsü",
+          loc: "Schluchtübergang • Natur",
+          desc: "Malerische Brückenstelle am Schluchtweg in der Region Kahta.",
+          audio: "Şeytan Köprüsü liegt inmitten steiler Schluchtwände und verbindet eindrucksvolle Natur mit historischem Wegbau. Der Steinbogen über den engen Durchgang und die hohen Felsen verleihen der Route einen besonderen Reiz. Für Naturfreunde ist dieser Punkt ein markantes Ziel in der Region."
+        },
+        fr: {
+          name: "Pont de Şeytan Köprüsü",
+          loc: "Passage du canyon • Nature",
+          desc: "Passage de pont pittoresque le long du sentier du canyon.",
+          audio: "Şeytan Köprüsü se niche entre d'abruptes parois de canyon, là où la nature sauvage rencontre un passage historique. Son arche en pierre au-dessus du défilé et les falaises alentour offrent un décor saisissant. C'est une halte marquante pour découvrir les paysages escarpés de la région."
+        },
+        ar: {
+          name: "جسر شيطان كوبروسي",
+          loc: "ممر الوادي • طبيعة وتاريخ",
+          desc: "نقطة عبور حجرية مميزة على مسار الوادي بطبيعتها الجبلية.",
+          audio: "يقع جسر شيطان كوبروسي بين جدران صخرية ومنحدرات وادٍ يجمع بين روعة الطبيعة وأثر العبور التاريخي. ويمنح القوس الحجري فوق الممر الضيق والصخور المحيطة به المسار طابعاً استكشافياً لافتاً يجعلها محطة مميزة لعشاق الطبيعة."
+        },
+        es: {
+          name: "Puente Şeytan Köprüsü",
+          loc: "Paso del cañón • Naturaleza",
+          desc: "Paso de puente escénico junto al sendero del cañón en Kahta.",
+          audio: "Şeytan Köprüsü se sitúa entre paredes de cañón escarpadas donde el paisaje natural se une a un paso histórico. Su arco de piedra sobre el estrecho y los farallones cercanos aportan un carácter único al recorrido. Es un punto destacado para quienes disfrutan de los entornos naturales de la zona."
+        },
+        ku: {
+          name: "Pira Şeytanî (Şeytan Köprüsü)",
+          loc: "Derbasbûna Kanyonê • Xweza û Dîrok",
+          desc: "Xaleke pira kevirî ya di nava dîwarên kanyonê yên asê de ku ji bo meşa xwezayê pir balkêş e.",
+          audio: "Pira Şeytanî di nava zinaran û kanyonê de cih digire û cihê ku xweza û dîrok digihêjin hev e. Kemera wê ya kevirî ya li ser tengaviyê û dîwarên zinaran hem xweşikiya dîmenê hem jî hesta keşfê didin rêyên meşê. Di gerên li herêmê de yek ji rawestgehên ku hêza xwezayê nîşan dide ye."
+        },
+        ja: {
+          name: "シェイタン橋",
+          loc: "渓谷の渡し • 自然と歴史",
+          desc: "険しい渓谷の岩壁に囲まれた、ハイカーにも人気の石橋スポット。",
+          audio: "シェイタン橋は、切り立った渓谷の岩壁の間に位置する、自然と歴史が交わる印象的な通過点です。狭い峡谷をまたぐ石のアーチと周囲の岩肌が、トレッキングルートに豊かな景観と探検の気分をもたらします。地域の自然の迫力を感じられる見どころの一つです。"
+        },
+        zh: {
+          name: "谢伊坦石桥",
+          loc: "峡谷通道 • 自然与历史",
+          desc: "位于陡峭峡谷岩壁之间、深受徒步者喜爱的石桥景观。",
+          audio: "谢伊坦石桥位于陡峭峡谷岩壁之间，是自然奇观与历史通道交汇的独特地点。横跨狭窄峡谷的石拱与四周的岩壁，为徒步路线增添了丰富的视觉层次与探索乐趣，是感受当地自然魅力的重要一站。"
+        }
+      }
+    ];
+
+    const MIRO_PACK = {
+      tr: {
+        btn: "🤖 Miro AI",
+        title: "Miro • Kahta AI Rehberi",
+        sub: "Seçtiğin dilde Kahta sorularını yanıtlar",
+        placeholder: "Seçtiğin dilde Kahta hakkında sor...",
+        greeting: "Merhaba! Ben Miro, Kahta ve Kommagene gezi asistanınım. Nemrut Dağı, Cendere Köprüsü, Karakuş Tümülüsü, ulaşım, yöresel yemekler ve soslar hakkında istediğini sorabilirsin.",
+        thinking: "Miro yanıt hazırlıyor...",
+        speakMsg: "🔊 Dinle",
+        chips: [
+          { label: "Nemrut'a nasıl gidilir?", topic: "transport" },
+          { label: "Kâhta'da ne yenir?", topic: "food" },
+          { label: "1 günlük rota önerir misin?", topic: "route" }
+        ],
+        answers: {
+          transport: "Bölgeye Adıyaman Havalimanı (ADF) veya Kâhta merkez/otogar üzerinden ulaşılır. Nemrut Dağı zirve yolu Kâhta'dan yaklaşık 43–45 km uzaklıktadır; zirvede kısa yürüyüş gerekir ve serin hava için kalın mont önerilir. Şehir içi hatlar için Kâhta Otobüsüm Nerede sistemini kullanabilirsin.",
+          food: "Kâhta ve çevresinde Adıyaman Çiğ Köftesi, Hıtap, Besni Tavası, İçli Köfte, Patlıcan Dizmesi ve tatlı olarak Şillik Tatlısı öne çıkar. Lezzetlere Nar Ekşisi, İsot ve Acı Biber Sosu ile Sarımsaklı Yoğurt / Tahinli Sos eşlik eder.",
+          route: "1 Günlük Kommagene Rotası:\n• 09:30 — Karakuş Tümülüsü\n• 10:30 — Cendere Köprüsü\n• 12:00 — Arsemia & Yeni Kale\n• 15:30 — Nemrut Dağı Zirvesi (gün batımı için kalın mont almayı unutma).",
+          monuments: "Başlıca duraklar: Nemrut Dağı Ören Yeri (2150 m, UNESCO), Cendere Köprüsü (Roma dönemi tek kemerli taş köprü), Karakuş Tümülüsü, Arsemia Antik Kenti, Yeni Kale ve Şeytan Köprüsü.",
+          sos: "Acil durumlarda SOS bölümünden GPS konumunu tek tuşla paylaşabilir, 112 Acil veya 156 Jandarma hattını arayabilirsin.",
+          general: "Ben Miro! Nemrut Dağı (2150 m), Cendere Köprüsü, Karakuş Tümülüsü, Arsemia, Yeni Kale, Şeytan Köprüsü, ulaşım hatları veya yöresel yemekler (Çiğ Köfte, Hıtap, Besni Tavası, Şillik) hakkında her şeyi sorabilirsin."
+        }
+      },
+      en: {
+        btn: "🤖 Miro AI",
+        title: "Miro • Kahta AI Guide",
+        sub: "Answers Kahta questions in your selected language",
+        placeholder: "Ask about Kahta in your selected language...",
+        greeting: "Hi! I'm Miro, your Kahta and Commagene travel assistant. Ask me anything about Mount Nemrut, Cendere Bridge, Karakuş Tumulus, transport, local food, or sauces.",
+        thinking: "Miro is preparing a reply...",
+        speakMsg: "🔊 Listen",
+        chips: [
+          { label: "How to reach Mount Nemrut?", topic: "transport" },
+          { label: "What to eat in Kahta?", topic: "food" },
+          { label: "Suggest a 1-day route", topic: "route" }
+        ],
+        answers: {
+          transport: "You can reach the area via Adıyaman Airport (ADF) or Kahta center/bus terminal. The Mount Nemrut summit road is roughly 43–45 km from Kahta, involves a short summit walk, and requires a warm jacket. You can also check live buses via Kahta Otobüsüm Nerede.",
+          food: "Top local dishes include Adıyaman Çiğ Köfte, Hıtap, Besni Tavası, Stuffed Köfte (İçli Köfte), Eggplant Casserole, and Şillik dessert, paired with Pomegranate Molasses, İsot & Hot Pepper Sauce, or Garlic Yogurt / Tahini Sauce.",
+          route: "1-Day Commagene Route:\n• 09:30 — Karakuş Tumulus\n• 10:30 — Cendere Bridge\n• 12:00 — Arsemia & Yeni Kale\n• 15:30 — Mount Nemrut Summit (bring a warm jacket for sunset).",
+          monuments: "Key landmarks include Mount Nemrut Ruins (2150m UNESCO site), Cendere Bridge (Roman single-arch stone bridge), Karakuş Tumulus, Arsemia Ancient City, Yeni Kale, and Şeytan Köprüsü.",
+          sos: "In emergencies, you can share your live GPS coordinates in one tap from the SOS section or call 112 Emergency or 156 Gendarmerie.",
+          general: "I'm Miro! Ask me about Mount Nemrut (2150m), Cendere Bridge, Karakuş Tumulus, Arsemia, Yeni Kale, Şeytan Köprüsü, transport, or local specialties like Çiğ Köfte, Hıtap, Besni Tavası, and Şillik."
+        }
+      },
+      de: {
+        btn: "🤖 Miro AI",
+        title: "Miro • Kahta KI-Guide",
+        sub: "Beantwortet Kahta-Fragen in Ihrer gewählten Sprache",
+        placeholder: "Fragen zu Kahta in Ihrer gewählten Sprache...",
+        greeting: "Hallo! Ich bin Miro, dein Reiseassistent für Kahta und Kommagene. Frag mich gern nach dem Nemrut Dağı, der Cendere-Brücke, dem Karakuş-Tumulus, der Anreise oder der lokalen Küche.",
+        thinking: "Miro bereitet eine Antwort vor...",
+        speakMsg: "🔊 Anhören",
+        chips: [
+          { label: "Wie kommt man zum Nemrut?", topic: "transport" },
+          { label: "Was in Kahta essen?", topic: "food" },
+          { label: "1-Tages-Route vorschlagen", topic: "route" }
+        ],
+        answers: {
+          transport: "Die Region ist über den Flughafen Adıyaman (ADF) sowie über das Zentrum und den Busbahnhof von Kahta erreichbar. Die Gipfelstraße zum Nemrut Dağı ist ca. 43–45 km entfernt, erfordert oben einen kurzen Fußweg und eine warme Jacke. Für Busse gibt es Kahta Otobüsüm Nerede.",
+          food: "Beliebte Spezialitäten sind Adıyaman Çiğ Köfte, Hıtap, Besni Tavası, gefüllte Köfte (İçli Köfte), Auberginenauflauf und das Şillik-Dessert – dazu passen Granatapfelsirup, İsot- & scharfe Paprikasauce sowie Knoblauchjoghurt / Tahinisauce.",
+          route: "1-Tages-Route Kommagene:\n• 09:30 — Karakuş-Tumulus\n• 10:30 — Cendere-Brücke\n• 12:00 — Arsemia & Yeni Kale\n• 15:30 — Nemrut Dağı Gipfel (warme Jacke für den Sonnenuntergang mitnehmen).",
+          monuments: "Wichtige Stätten sind Nemrut Dağı (2150m, UNESCO), Cendere-Brücke (römische Bogenbrücke), Karakuş-Tumulus, Arsemia, Yeni Kale und Şeytan Köprüsü.",
+          sos: "Im Notfall können Sie im SOS-Bereich Ihre GPS-Koordinaten mit einem Tippen teilen oder 112 (Notruf) bzw. 156 (Gendarmerie) anrufen.",
+          general: "Ich bin Miro! Frag mich nach Nemrut Dağı (2150m), Cendere-Brücke, Karakuş-Tumulus, Arsemia, Yeni Kale, Şeytan Köprüsü, Anreise oder Spezialitäten wie Çiğ Köfte, Hıtap, Besni Tavası und Şillik."
+        }
+      },
+      fr: {
+        btn: "🤖 Miro IA",
+        title: "Miro • Guide IA Kahta",
+        sub: "Répond sur Kahta dans la langue choisie",
+        placeholder: "Posez une question sur Kahta dans votre langue...",
+        greeting: "Bonjour ! Je suis Miro, votre assistant voyage pour Kahta et la Commagène. Posez-moi vos questions sur le mont Nemrut, le pont de Cendere, Karakuş, l'accès, les plats locaux ou les sauces.",
+        thinking: "Miro prépare une réponse...",
+        speakMsg: "🔊 Écouter",
+        chips: [
+          { label: "Comment aller au mont Nemrut ?", topic: "transport" },
+          { label: "Que manger à Kahta ?", topic: "food" },
+          { label: "Itinéraire d'une journée", topic: "route" }
+        ],
+        answers: {
+          transport: "L'accès se fait via l'aéroport d'Adıyaman (ADF) ou le centre et la gare routière de Kahta. La route du sommet du mont Nemrut fait environ 43–45 km, avec une courte marche en haut et une veste chaude conseillée. Consultez aussi Kahta Otobüsüm Nerede pour les bus.",
+          food: "Parmi les plats locaux : Çiğ Köfte d'Adıyaman, Hıtap, Besni Tavası, Köfte farcies (İçli Köfte), gratin d'aubergines et dessert Şillik, accompagnés de mélasse de grenade, sauce isot & piment fort ou yaourt à l'ail / tahini.",
+          route: "Itinéraire Commagène — 1 jour :\n• 09:30 — Tumulus de Karakuş\n• 10:30 — Pont de Cendere\n• 12:00 — Arsemia & Yeni Kale\n• 15:30 — Sommet du mont Nemrut (prévoyez une veste chaude pour le coucher du soleil).",
+          monuments: "À découvrir : mont Nemrut (2150m, UNESCO), pont de Cendere (pont romain à arche unique), tumulus de Karakuş, Arsemia, Yeni Kale et Şeytan Köprüsü.",
+          sos: "En cas d'urgence, partagez vos coordonnées GPS en un clic depuis la section SOS ou appelez le 112 ou le 156.",
+          general: "Je suis Miro ! Posez-moi des questions sur le mont Nemrut (2150m), le pont de Cendere, Karakuş, Arsemia, Yeni Kale, Şeytan Köprüsü, l'accès ou la cuisine locale (Çiğ Köfte, Hıtap, Besni Tavası, Şillik)."
+        }
+      },
+      ar: {
+        btn: "🤖 ميرو AI",
+        title: "ميرو • مساعد كاهتا الذكي",
+        sub: "يجيب عن أسئلة كاهتا باللغة التي اخترتها",
+        placeholder: "اسأل عن كاهتا باللغة التي اخترتها...",
+        greeting: "مرحباً! أنا ميرو، مساعدك السياحي لكاهتا ومملكة كوماجين. اسألني عن جبل نمرود، جسر جندري، تل قراقوش، المواصلات، الأطباق المحلية، أو الصلصات.",
+        thinking: "ميرو يجهّز الإجابة...",
+        speakMsg: "🔊 استمع",
+        chips: [
+          { label: "كيف أصل إلى جبل نمرود؟", topic: "transport" },
+          { label: "ماذا أتناول في كاهتا؟", topic: "food" },
+          { label: "اقترح مساراً ليوم واحد", topic: "route" }
+        ],
+        answers: {
+          transport: "يمكن الوصول إلى المنطقة عبر مطار أديامان (ADF) أو عبر مركز كاهتا ومحطة الحافلات. يبعد طريق قمة جبل نمرود نحو 43–45 كم عن كاهتا مع مشي قصير عند القمة ويُفضّل اصطحاب معطف دافئ، كما تتوفر متابعة الحافلات عبر نظام كاهتا أوتوبوسوم نيرده.",
+          food: "من أبرز الأطباق المحلية: تشي كوفتة أديامان، هتاب، بسني تافاسي، الكبة المحشوة، صينية الباذنجان، وحلوى شليك، وتُقدَّم مع دبس الرمان أو صلصة الإيسوت والفلفل الحار أو اللبن بالثوم والطحينة.",
+          route: "مسار كوماجين ليوم واحد:\n• 09:30 — تل قراقوش الأثري\n• 10:30 — جسر جندري الأثري\n• 12:00 — أرساميا وقلعة يني كالي\n• 15:30 — قمة جبل نمرود (اصطحب معطفاً دافئاً للغروب).",
+          monuments: "أبرز المعالم: جبل نمرود (2150م، اليونسكو)، جسر جندري الروماني، تل قراقوش، مدينة أرساميا الأثرية، قلعة يني كالي، وجسر شيطان كوبروسي.",
+          sos: "في حالات الطوارئ يمكنك مشاركة إحداثيات GPS بلمسة واحدة من قسم SOS أو الاتصال على 112 للطوارئ أو 156 للجندرمة.",
+          general: "أنا ميرو! اسألني عن جبل نمرود (2150م)، جسر جندري، تل قراقوش، أرساميا، قلعة يني كالي، جسر شيطان كوبروسي، المواصلات، أو الأطباق المحلية مثل التشي كوفتة والهتاب وبسني تافاسي وحلوى شليك."
+        }
+      },
+      es: {
+        btn: "🤖 Miro IA",
+        title: "Miro • Guía IA de Kahta",
+        sub: "Responde sobre Kahta en el idioma elegido",
+        placeholder: "Pregunta sobre Kahta en tu idioma elegido...",
+        greeting: "¡Hola! Soy Miro, tu asistente de viaje de Kahta y Comagene. Pregúntame sobre el monte Nemrut, el puente de Cendere, Karakuş, transporte, comida local o salsas.",
+        thinking: "Miro está preparando la respuesta...",
+        speakMsg: "🔊 Escuchar",
+        chips: [
+          { label: "¿Cómo llegar al monte Nemrut?", topic: "transport" },
+          { label: "¿Qué comer en Kahta?", topic: "food" },
+          { label: "Sugerir ruta de 1 día", topic: "route" }
+        ],
+        answers: {
+          transport: "Puedes llegar por el aeropuerto de Adıyaman (ADF) o desde el centro y la terminal de buses de Kahta. La carretera a la cumbre de Nemrut está a unos 43–45 km, incluye una corta caminata arriba y conviene llevar abrigo. También puedes ver buses en Kahta Otobüsüm Nerede.",
+          food: "Entre los platos locales destacan Çiğ Köfte de Adıyaman, Hıtap, Besni Tavası, Köfte rellenas (İçli Köfte), gratinado de berenjena y postre Şillik, acompañados de melaza de granada, salsa de isot y ají picante o yogur con ajo / tahini.",
+          route: "Ruta de Comagene — 1 día:\n• 09:30 — Túmulo de Karakuş\n• 10:30 — Puente de Cendere\n• 12:00 — Arsemia y Yeni Kale\n• 15:30 — Cumbre del monte Nemrut (lleva abrigo para el atardecer).",
+          monuments: "Lugares principales: monte Nemrut (2150m, UNESCO), puente de Cendere (puente romano de un arco), túmulo de Karakuş, Arsemia, Yeni Kale y Şeytan Köprüsü.",
+          sos: "En emergencias, comparte tus coordenadas GPS en un toque desde SOS o llama al 112 o al 156.",
+          general: "¡Soy Miro! Pregúntame sobre el monte Nemrut (2150m), el puente de Cendere, Karakuş, Arsemia, Yeni Kale, Şeytan Köprüsü, transporte o platos como Çiğ Köfte, Hıtap, Besni Tavası y Şillik."
+        }
+      },
+      ku: {
+        btn: "🤖 Miro AI",
+        title: "Miro • Rêberê AI yê Kaxtayê",
+        sub: "Bi zimanê ku te hilbijartiye bersiva Kaxtayê dide",
+        placeholder: "Bi zimanê hilbijartî derbarê Kaxtayê de bipirse...",
+        greeting: "Silav! Ez Miro me, alîkarê te yê geştê yê Kaxta û Kommageneyê. Dikarî derbarê Çiyayê Nemrûdê, Pira Cendereyê, Tûmûlûsa Qereqûşê, gihîştin, xwarinên herêmî û sosan de bipirsî.",
+        thinking: "Miro bersivê amade dike...",
+        speakMsg: "🔊 Guhdar Bike",
+        chips: [
+          { label: "Meriv çawa diçe Çiyayê Nemrûdê?", topic: "transport" },
+          { label: "Li Kaxtayê çi tê xwarin?", topic: "food" },
+          { label: "Rêyeke 1 rojî pêşniyar bike", topic: "route" }
+        ],
+        answers: {
+          transport: "Gihîştina herêmê bi rêya Balafirgeha Semsûrê (ADF) an navenda Kaxtayê û garajê çêdibe. Rêya lûtkeya Çiyayê Nemrûdê nêzîkî 43–45 km ji Kaxtayê dûr e, li lûtkeyê meşeke kurt hewce dike û ji bo hewaya sar ceketeke stûr tê pêşniyarkirin. Ji bo otobûsan dikarî Kahta Otobüsüm Nerede bikar bînî.",
+          food: "Xwarinên herêmî yên sereke Çîkofteya Semsûrê, Hîtap, Tavaya Bêsnîyê, Kutilkên Dagirtî, Rêzkirina Balîcanê û şîraniya Şîllîkê ne; li gel wan Doşava Hinarê, Sosa Îsot û Îsota Tûj an Mastê bi Sîr / Tahînê tên pêşkêşkirin.",
+          route: "Rêya 1 Rojî ya Kommageneyê:\n• 09:30 — Tûmûlûsa Qereqûşê\n• 10:30 — Pira Cendereyê\n• 12:00 — Arsemîa & Kela Nû\n• 15:30 — Lûtkeya Çiyayê Nemrûdê (ji bo rojavabûnê ceketeke stûr bi xwe re bibe).",
+          monuments: "Cihên sereke: Çiyayê Nemrûdê (2150m, UNESCO), Pira Cendereyê, Tûmûlûsa Qereqûşê, Bajarê Antîk ê Arsemîayê, Kela Nû û Pira Şeytanî.",
+          sos: "Di rewşên awarte de ji beşa SOSê dikarî koordînata GPSê bi yek bişkokê parve bikî an telefonî 112 Acîl û 156 Cendirmeyan bikî.",
+          general: "Ez Miro me! Derbarê Çiyayê Nemrûdê (2150m), Pira Cendereyê, Tûmûlûsa Qereqûşê, Arsemîa, Kela Nû, Pira Şeytanî, gihîştin an xwarinên wekî Çîkofte, Hîtap, Tavaya Bêsnîyê û Şîllîkê de bipirse."
+        }
+      },
+      ja: {
+        btn: "🤖 Miro AI",
+        title: "Miro • カフタAIガイド",
+        sub: "選択した言語でカフタの質問に回答します",
+        placeholder: "選択した言語でカフタについて質問...",
+        greeting: "こんにちは！カフタとコンマゲネの旅アシスタント「Miro」です。ネムルート山、ジェンデレ橋、カラクシュ墳丘墓、アクセス、郷土料理、ソースについて何でも聞いてください。",
+        thinking: "Miro が回答を作成中...",
+        speakMsg: "🔊 音声で聴く",
+        chips: [
+          { label: "ネムルート山への行き方は？", topic: "transport" },
+          { label: "カフタのおすすめ料理は？", topic: "food" },
+          { label: "1日ルートを提案して", topic: "route" }
+        ],
+        answers: {
+          transport: "アドゥヤマン空港 (ADF) またはカフタ中心部・バスターミナル経由でアクセスできます。ネムルート山山頂道路はカフタから約43〜45kmで、山頂では短い徒歩があり、冷え込み対策として暖かい上着がおすすめです。バスは「Kahta Otobüsüm Nerede」で確認できます。",
+          food: "人気の郷土料理はアドゥヤマン・チーキョフテ、ヒタップ、ベスニ・タヴァス、イチリ・キョフテ、ナスのオーブン焼き、デザートのシッリッキです。ザクロのモラセス、イソット＆唐辛子ソース、にんにくヨーグルト／タヒニソースが添えられます。",
+          route: "コンマゲネ 1日ルート：\n• 09:30 — カラクシュ墳丘墓\n• 10:30 — ジェンデレ橋\n• 12:00 — アルセミア＆イェニ・カレ\n• 15:30 — ネムルート山山頂（日没用に暖かい上着をお持ちください）。",
+          monuments: "主な史跡：ネムルート山遺跡（標高2150m・世界遺産）、ジェンデレ橋、カラクシュ墳丘墓、アルセミア古代都市、イェニ・カレ城塞、シェイタン橋。",
+          sos: "緊急時はSOSセクションからワンタップでGPS座標を共有するか、112番緊急通報または156番ジャンダルマにご連絡ください。",
+          general: "私はMiroです！ネムルート山（2150m）、ジェンデレ橋、カラクシュ墳丘墓、アルセミア、イェニ・カレ、シェイタン橋、交通手段、チーキョフテやヒタップ、ベスニ・タヴァス、シッリッキなどの料理についてお答えします。"
+        }
+      },
+      zh: {
+        btn: "🤖 Miro AI",
+        title: "Miro • 卡赫塔 AI 导游",
+        sub: "按您选择的语言回答卡赫塔问题",
+        placeholder: "用您选择的语言提问关于卡赫塔的问题...",
+        greeting: "你好！我是 Miro，你的卡赫塔与科马吉内旅行助手。你可以向我询问内姆鲁特山、詹代雷桥、卡拉库什王室封土墓、交通、当地美食或酱汁。",
+        thinking: "Miro 正在生成回答...",
+        speakMsg: "🔊 语音收听",
+        chips: [
+          { label: "怎么去内姆鲁特山？", topic: "transport" },
+          { label: "卡赫塔有什么特色美食？", topic: "food" },
+          { label: "推荐一条一日游路线", topic: "route" }
+        ],
+        answers: {
+          transport: "可通过阿德亚曼机场 (ADF) 或卡赫塔市中心与汽车站前往。内姆鲁特山顶公路距卡赫塔约 43–45 公里，登顶后需步行一小段，建议携带保暖外套；公交动态可通过 Kahta Otobüsüm Nerede 查看。",
+          food: "特色美食包括阿德亚曼生肉丸、赫塔普烤饼、贝斯尼烤盘菜、馅料烤肉丸、茄子烤盘菜以及甜点希利克，常搭配石榴糖浆、伊索特辣椒酱或蒜香酸奶／芝麻酱。",
+          route: "科马吉内一日游路线：\n• 09:30 — 卡拉库什王室封土墓\n• 10:30 — 詹代雷桥\n• 12:00 — 阿尔塞米亚与耶尼卡莱城堡\n• 15:30 — 内姆鲁特山顶（看日落请带保暖外套）。",
+          monuments: "主要古迹：内姆鲁特山遗址（海拔2150米、世界遗产）、詹代雷桥、卡拉库什王室封土墓、阿尔塞米亚古城、耶尼卡莱城堡、谢伊坦石桥。",
+          sos: "紧急情况下，可在 SOS 区域一键分享 GPS 坐标，或拨打 112 急救与 156 宪兵电话。",
+          general: "我是 Miro！你可以问我关于内姆鲁特山（2150米）、詹代雷桥、卡拉库什王室封土墓、阿尔塞米亚、耶尼卡莱、谢伊坦石桥、交通方式以及生肉丸、赫塔普烤饼、贝斯尼烤盘菜和希利克甜点的问题。"
+        }
+      }
+    };
+
+    const UI = {
+      tr: {
+        dir: "ltr",
+        preparedBy: "Berat Kür tarafından hazırlandı",
+        welcomeTitle: "Discover Kahta'ya Hoş Geldiniz",
+        welcomeSub: "Devam etmek için dilinizi seçin • Please select your language to continue",
+        welcomeAudioBtn: "🔊 Giriş Sesli Rehberini Dinle",
+        stopAudioBtn: "⏹ Sesi Durdur",
+        welcomeNarration: "Discover Kahta akıllı gezi rehberine hoş geldiniz. Nemrut Dağı ve Cendere Köprüsü'nden Karakuş Tümülüsü ve Yeni Kale'ye kadar bölgedeki tarihi durakları keşfedebilir, mesafeleri ölçebilir, yöresel lezzetleri inceleyebilir ve her eserin sesli anlatımını dinleyebilirsiniz. Başlamak için dilinizi seçin.",
+        speakSection: "🔊 Sesli Dinle",
+        routeNarration: "Bir günlük Kommagene rotası: Sabah dokuz buçukta Karakuş Tümülüsü, on buçukta Cendere Köprüsü, öğlen on ikide Arsemia ve Yeni Kale, on beş otuzda ise gün batımı için Nemrut Dağı Zirvesi.",
+        foodNarration: "Kâhta ve çevresinin sevilen yöresel lezzetleri: Adıyaman Çiğ Köftesi, Hıtap, Besni Tavası, İçli Köfte, Patlıcan Dizmesi ve tatlı olarak Şillik Tatlısı.",
+        saucesNarration: "Yöresel yemeklere eşlik eden başlıca soslar: Nar Ekşisi, İsot ve Acı Biber Sosu ile Sarımsaklı Yoğurt ve Tahinli Sos.",
+        transportNarration: "Ulaşım noktaları: Adıyaman Havalimanı, Kâhta Merkez ve Otogar bölgesi ile Nemrut Dağı Zirve Yolu. Ayrıca Kâhta Otobüsüm Nerede sistemiyle canlı otobüs takibi yapabilirsiniz.",
+        sosNarration: "Acil durumlarda konumunuzu tek tuşla paylaşabilir, 112 Acil veya 156 Jandarma hattını arayabilirsiniz.",
+        navMonuments: "Tarihi Eserler", navRoute: "Gezi Rotası", navFood: "Yemekler", navSauces: "Soslar", navTransport: "Ulaşım", navSos: "SOS", changeLang: "🌐 Dil Seçimi",
+        musicOn: "🎵 Müzik: Açık", musicOff: "🎵 Müzik: Kapalı", stopAllBtn: "⏹ Sesi Durdur",
+        heroTitle: "Kommagene'nin Kalbi <em>Kahta</em>'yı Keşfet",
+        heroSub: "Tarihi eserlerin fotoğraflarına göz at, bulunduğun noktaya olan uzaklığı gör ve tek dokunuşla yol tarifi al.",
+        btnLocate: "📍 Konumumu Bul & Mesafe Ölç",
+        gpsDefault: "📍 Konum bekleniyor — Kahta merkez referans alındı",
+        gpsFound: "📍 Canlı GPS aktif — Mesafeler konumuna göre güncellendi",
+        sunTitle: "🌅 Nemrut Zirve Geri Sayımı",
+        sunrise: "Gün Doğumu", sunset: "Gün Batımı",
+        coldAlert: "🧥 Zirve uyarısı: Nemrut zirvesi merkezden çok daha serin olur. Yanınıza kalın mont alın.",
+        monKicker: "Fotoğraf Rehberi", monTitle: "Tarihi Eserler, Uzaklık ve Yol Tarifi",
+        monSub: "6 tarihi eserin fotoğraflarını, mesafelerini ve yol tariflerini inceleyebilirsin.",
+        photoTag: "📷 Görsel Rehber",
+        foodBadge: "🍽 Yöresel Lezzet",
+        sauceBadge: "🫙 Yöresel Sos",
+        routeKicker: "Önerilen Plan", routeTitle: "1 Günlük Kommagene Rotası",
+        r1: "Karakuş Tümülüsü", r1d: "Kommagene kraliyet kadınlarına adanmış anıt mezar ve kartal sütunu.",
+        r2: "Cendere Köprüsü", r2d: "Roma döneminden kalma, tek kemerli görkemli taş köprü.",
+        r3: "Arsemia & Yeni Kale", r3d: "Yazlık başkent kalıntıları ve vadiye hakim sarp kale.",
+        r4: "Nemrut Dağı Zirvesi", r4d: "Dev tanrı heykelleri ve eşsiz gün batımı manzarası.",
+        foodKicker: "Yerel Mutfak", foodTitle: "Yemekler",
+        f1: "Adıyaman Çiğ Köftesi", f1d: "İnce bulgur, yöresel baharatlar ve taze yeşilliklerle özenle hazırlanan klasik lezzet.",
+        f2: "Hıtap", f2d: "İnce açılan hamurun kıymalı ve baharatlı harçla fırında pişirilmesiyle hazırlanan yöresel lezzet.",
+        f3: "Besni Tavası", f3d: "Kuzu eti, biber, domates ve sarımsakla tepside ağır ağır pişirilen sevilen fırın yemeği.",
+        f4: "İçli Köfte", f4d: "Bulgur kabuğu içinde cevizli ve kıymalı harçla hazırlanan geleneksel lezzet.",
+        f5: "Patlıcan Dizmesi", f5d: "Dilimlenmiş patlıcan ve kıymanın uyumuyla hazırlanan yöresel tepsi yemeği.",
+        f6: "Şillik Tatlısı", f6d: "İnce kreplerin ceviz ve şerbetle buluştuğu hafif ve geleneksel tatlı.",
+        saucesKicker: "Eşlikçiler", saucesTitle: "Soslar",
+        s1: "Nar Ekşisi", s1d: "Çiğ köfte ve salatalara mayhoş denge ve canlı bir aroma katan geleneksel sos.",
+        s2: "İsot & Acı Biber Sosu", s2d: "Güneşte kurutulan biberlerden yapılan, isli ve dengeli acılı yöresel eşlikçi.",
+        s3: "Sarımsaklı Yoğurt / Tahinli Sos", s3d: "Hamur işleri ve yöresel tabaklarla birlikte sunulan yumuşatıcı sos alternatifi.",
+        trKicker: "Bölgeye Erişim & Canlı Hat", trTitle: "Ulaşım Bilgileri ve Konumlar",
+        t1: "Adıyaman Havalimanı (ADF)", t1d: "Bölgeye hava yoluyla ulaşım noktasıdır.",
+        t2: "Kâhta Merkez — Girne Mah. / Otogar Bölgesi", t2d: "İlçe merkezi, otogar ve çevre güzergahlarına çıkış noktasıdır.",
+        t3: "Kâhta — Nemrut Dağı Zirve Yolu", t3d: "Yaklaşık 43–45 km dağ güzergahı; zirvede kısa yürüyüş gerekir.",
+        busTitle: "🚌 Kâhta Otobüsüm Nerede (Canlı Otobüs Takip)",
+        busDesc: "Kâhta Belediyesi hatlarını ve güncel otobüs konumlarını resmi sistem üzerinden görüntüleyebilirsin.",
+        busBtn: "🚌 Otobüsüm Nerede'yi Aç",
+        sosKicker: "Güvenlik & Yardım", sosTitle: "SOS — Acil Yardım & Konum Paylaşımı",
+        sosDesc: "Zirvede veya yolda yardıma ihtiyaç duyduğunda GPS koordinatını tek tuşla paylaşabilirsin.",
+        btnShareLoc: "📤 Konumumu Paylaş",
+        call112: "📞 112 Acil",
+        call156: "🛡 156 Jandarma",
+        directions: "🗺 Yol Tarifi", audio: "🔊 Detaylı Sesli Rehber",
+        footerNote: "Öğrenci Projesi — Çok Dilli Turizm Rehberi",
+        coordsLabel: "Koordinat", km: "km",
+        gpsLocating: "📍 Konum alınıyor...",
+        gpsDenied: "📍 Konum izni verilmedi — Kahta merkez referans alındı",
+        gpsUnavailable: "📍 Bu tarayıcıda konum servisi kullanılamıyor",
+        copied: "📋 Konum bilgisi panoya kopyalandı",
+        shared: "📤 Konum paylaşımı açıldı",
+        audioUnsupported: "Tarayıcınız sesli okumayı desteklemiyor",
+        audioStopped: "⏹ Ses durduruldu"
+      },
+      en: {
+        dir: "ltr",
+        preparedBy: "Prepared by Berat Kür",
+        welcomeTitle: "Welcome to Discover Kahta",
+        welcomeSub: "Please select your language to continue • Devam etmek için dilinizi seçin",
+        welcomeAudioBtn: "🔊 Play Intro Audio Guide",
+        stopAudioBtn: "⏹ Stop Audio",
+        welcomeNarration: "Welcome to the Discover Kahta smart travel guide. From Mount Nemrut and Cendere Bridge to Karakuş Tumulus and Yeni Kale, you can explore local landmarks, measure distances, browse regional dishes, and listen to detailed audio guides. Please choose your language to begin.",
+        speakSection: "🔊 Listen",
+        routeNarration: "One-day Commagene itinerary: Karakuş Tumulus at nine thirty, Cendere Bridge at ten thirty, Arsemia and Yeni Kale at noon, and Mount Nemrut summit at fifteen thirty for sunset.",
+        foodNarration: "Popular dishes of Kahta and the surrounding region: Adıyaman Çiğ Köfte, Hıtap, Besni Tavası, Stuffed Köfte, Eggplant Casserole, and Şillik dessert.",
+        saucesNarration: "Key sauces served with local dishes: Pomegranate Molasses, İsot and Hot Pepper Sauce, and Garlic Yogurt with Tahini Sauce.",
+        transportNarration: "Transport points include Adıyaman Airport, Kahta Center and Bus Terminal area, and Mount Nemrut summit road. You can also check live buses via the Kahta Otobüsüm Nerede system.",
+        sosNarration: "In emergencies, you can share your location in one tap or call 112 Emergency or 156 Gendarmerie.",
+        navMonuments: "Monuments", navRoute: "Itinerary", navFood: "Food", navSauces: "Sauces", navTransport: "Transport", navSos: "SOS", changeLang: "🌐 Language",
+        musicOn: "🎵 Music: On", musicOff: "🎵 Music: Off", stopAllBtn: "⏹ Stop Audio",
+        heroTitle: "Explore <em>Kahta</em>, Heart of Commagene",
+        heroSub: "Browse monument photos, see distance from your location, and get directions in one tap.",
+        btnLocate: "📍 Find My Location & Measure",
+        gpsDefault: "📍 Awaiting location — Kahta center set as reference",
+        gpsFound: "📍 Live GPS active — Distances updated from your location",
+        sunTitle: "🌅 Nemrut Summit Countdown",
+        sunrise: "Sunrise", sunset: "Sunset",
+        coldAlert: "🧥 Summit alert: Mount Nemrut is much cooler than town center. Bring a warm jacket.",
+        monKicker: "Photo Guide", monTitle: "Monuments, Distance & Directions",
+        monSub: "Explore photos, distances, and directions for 6 historical landmarks.",
+        photoTag: "📷 Visual Guide",
+        foodBadge: "🍽 Local Dish",
+        sauceBadge: "🫙 Local Sauce",
+        routeKicker: "Suggested Plan", routeTitle: "1-Day Commagene Route",
+        r1: "Karakuş Tumulus", r1d: "Royal burial mound for Commagene women with an eagle column.",
+        r2: "Cendere Bridge", r2d: "Single-arch Roman stone bridge built around 1,800 years ago.",
+        r3: "Arsemia & Yeni Kale", r3d: "Summer capital ruins and cliffside fortress above the valley.",
+        r4: "Mount Nemrut Summit", r4d: "Colossal statues of gods and iconic sunset views.",
+        foodKicker: "Local Cuisine", foodTitle: "Food",
+        f1: "Adıyaman Çiğ Köfte", f1d: "Traditional specialty crafted with fine bulgur, local spices, and fresh greens.",
+        f2: "Hıtap", f2d: "Baked flatbread filled with seasoned minced meat and aromatic herbs.",
+        f3: "Besni Tavası", f3d: "Slow-baked tray dish with lamb, peppers, tomatoes, and garlic.",
+        f4: "Stuffed Köfte (İçli Köfte)", f4d: "Bulgur shell filled with spiced minced meat and walnuts.",
+        f5: "Eggplant Casserole (Patlıcan Dizmesi)", f5d: "Layered baked dish with sliced eggplant and seasoned meat.",
+        f6: "Şillik Dessert", f6d: "Delicate layered crepes paired with walnuts and light syrup.",
+        saucesKicker: "Pairings", saucesTitle: "Sauces",
+        s1: "Pomegranate Molasses (Nar Ekşisi)", s1d: "Tangy traditional syrup adding brightness to çiğ köfte and salads.",
+        s2: "İsot & Hot Pepper Sauce", s2d: "Smoky sun-dried pepper accompaniment with balanced heat.",
+        s3: "Garlic Yogurt / Tahini Sauce", s3d: "Creamy pairing served alongside pastries and savory dishes.",
+        trKicker: "Regional Access & Live Line", trTitle: "Transport Info & Locations",
+        t1: "Adıyaman Airport (ADF)", t1d: "Main regional air gateway.",
+        t2: "Kahta Center — Girne / Bus Terminal", t2d: "Town center, bus station, and departure point for nearby sites.",
+        t3: "Kahta — Mount Nemrut Summit Road", t3d: "Approx. 43–45 km mountain road; a short walk is required at the summit.",
+        busTitle: "🚌 Kahta Otobüsüm Nerede (Live Bus Tracker)",
+        busDesc: "View Kahta Municipality routes and live bus locations on the official portal.",
+        busBtn: "🚌 Open Otobüsüm Nerede",
+        sosKicker: "Safety & Help", sosTitle: "SOS — Emergency Help & Location Share",
+        sosDesc: "Share your live GPS coordinates in one tap or call emergency numbers.",
+        btnShareLoc: "📤 Share Location",
+        call112: "📞 112 Emergency",
+        call156: "🛡 156 Gendarmerie",
+        directions: "🗺 Directions", audio: "🔊 Detailed Audio Guide",
+        footerNote: "Student Project — Multilingual Travel Guide",
+        coordsLabel: "Coordinates", km: "km",
+        gpsLocating: "📍 Detecting location...",
+        gpsDenied: "📍 Location permission denied — Kahta center set as reference",
+        gpsUnavailable: "📍 Geolocation is unavailable in this browser",
+        copied: "📋 Location details copied to clipboard",
+        shared: "📤 Location sharing opened",
+        audioUnsupported: "Your browser does not support speech synthesis",
+        audioStopped: "⏹ Audio stopped"
+      },
+      de: {
+        dir: "ltr",
+        preparedBy: "Erstellt von Berat Kür",
+        welcomeTitle: "Willkommen bei Discover Kahta",
+        welcomeSub: "Bitte wählen Sie Ihre Sprache • Devam etmek için dilinizi seçin",
+        welcomeAudioBtn: "🔊 Begrüßungs-Audio starten",
+        stopAudioBtn: "⏹ Audio stoppen",
+        welcomeNarration: "Willkommen beim smarten Reiseführer Discover Kahta. Vom Nemrut Dağı und der Cendere-Brücke bis zum Karakuş-Tumulus und Yeni Kale entdecken Sie Sehenswürdigkeiten, Entfernungen, lokale Spezialitäten und ausführliche Audioguides. Bitte wählen Sie Ihre Sprache.",
+        speakSection: "🔊 Anhören",
+        routeNarration: "Kommagene-Tagesroute: Um neun Uhr dreißig Karakuş-Tumulus, um zehn Uhr dreißig Cendere-Brücke, mittags um zwölf Arsemia und Yeni Kale und um fünfzehn Uhr dreißig zum Sonnenuntergang auf den Nemrut Dağı.",
+        foodNarration: "Beliebte Spezialitäten aus Kahta und der Region: Adıyaman Çiğ Köfte, Hıtap, Besni Tavası, gefüllte Köfte, Auberginenauflauf und das Dessert Şillik.",
+        saucesNarration: "Wichtige Saucen zur regionalen Küche: Granatapfelsirup, İsot- und scharfe Paprikasauce sowie Knoblauchjoghurt- und Tahinisauce.",
+        transportNarration: "Wichtige Verkehrspunkte sind der Flughafen Adıyaman, das Zentrum von Kahta mit dem Busbahnhof sowie die Bergstraße zum Nemrut Dağı. Über Kahta Otobüsüm Nerede lassen sich Busse live verfolgen.",
+        sosNarration: "Im Notfall können Sie Ihren Standort mit einem Tippen teilen oder 112 und 156 anrufen.",
+        navMonuments: "Sehenswürdigkeiten", navRoute: "Route", navFood: "Essen", navSauces: "Saucen", navTransport: "Anreise", navSos: "SOS", changeLang: "🌐 Sprache",
+        musicOn: "🎵 Musik: An", musicOff: "🎵 Musik: Aus", stopAllBtn: "⏹ Audio stoppen",
+        heroTitle: "Entdecke <em>Kahta</em>, das Herz von Kommagene",
+        heroSub: "Sieh Fotos historischer Stätten, prüfe die Entfernung und starte die Navigation mit einem Tippen.",
+        btnLocate: "📍 Standort finden & messen",
+        gpsDefault: "📍 Warte auf Standort — Kahta-Zentrum als Referenz",
+        gpsFound: "📍 Live-GPS aktiv — Entfernungen aktualisiert",
+        sunTitle: "🌅 Nemrut-Gipfel Countdown",
+        sunrise: "Sonnenaufgang", sunset: "Sonnenuntergang",
+        coldAlert: "🧥 Gipfelhinweis: Auf dem Nemrut ist es deutlich kälter als im Ort. Warme Jacke mitnehmen.",
+        monKicker: "Bildführer", monTitle: "Sehenswürdigkeiten, Entfernung & Route",
+        monSub: "Fotos, Entfernungen und Wegbeschreibungen zu 6 historischen Stätten.",
+        photoTag: "📷 Bildführer",
+        foodBadge: "🍽 Lokales Gericht",
+        sauceBadge: "🫙 Lokale Sauce",
+        routeKicker: "Tagesplan", routeTitle: "1-Tages-Route Kommagene",
+        r1: "Karakuş-Tumulus", r1d: "Königlicher Grabhügel der Kommagene mit Adlersäule.",
+        r2: "Cendere-Brücke", r2d: "Etwa 1800 Jahre alte römische Bogenbrücke aus Stein.",
+        r3: "Arsemia & Yeni Kale", r3d: "Sommerresidenz und Felsenburg über dem Tal.",
+        r4: "Nemrut Dağı Gipfel", r4d: "Riesige Götterstatuen und Sonnenuntergangsblick.",
+        foodKicker: "Regionale Küche", foodTitle: "Essen",
+        f1: "Adıyaman Çiğ Köfte", f1d: "Traditionelle Spezialität mit feinem Bulgur, Gewürzen und frischem Grün.",
+        f2: "Hıtap", f2d: "Im Ofen gebackenes Fladenbrot mit würziger Hackfleischfüllung.",
+        f3: "Besni Tavası", f3d: "Langsam im Blech gegartes Gericht mit Lamm, Paprika, Tomaten und Knoblauch.",
+        f4: "Gefüllte Köfte (İçli Köfte)", f4d: "Bulgurhülle gefüllt mit gewürztem Hackfleisch und Walnüssen.",
+        f5: "Auberginen-Blechgericht", f5d: "Geschichtetes Ofengericht mit Auberginen und gewürztem Fleisch.",
+        f6: "Şillik-Dessert", f6d: "Feine Teigschichten mit Walnüssen und leichtem Sirup.",
+        saucesKicker: "Beilagen", saucesTitle: "Saucen",
+        s1: "Granatapfelsirup (Nar Ekşisi)", s1d: "Fruchtig-säuerlicher Sirup für Çiğ Köfte und Salate.",
+        s2: "İsot- & scharfe Paprikasauce", s2d: "Rauchig-würzige Paprikabeilage mit ausgewogener Schärfe.",
+        s3: "Knoblauchjoghurt / Tahinisauce", s3d: "Milde Begleitung zu Teiggerichten und herzhaften Speisen.",
+        trKicker: "Anreise & Live-Linie", trTitle: "Verkehrsinfos & Orte",
+        t1: "Flughafen Adıyaman (ADF)", t1d: "Flughafen für die Anreise in die Region.",
+        t2: "Kahta Zentrum — Girne / Busbahnhof", t2d: "Stadtzentrum, Busbahnhof und Ausgangspunkt für Ausflüge.",
+        t3: "Kahta — Nemrut-Gipfelstraße", t3d: "Ca. 43–45 km Bergstrecke; oben ist ein kurzer Fußweg nötig.",
+        busTitle: "🚌 Kahta Otobüsüm Nerede (Live-Bus-Tracker)",
+        busDesc: "Linien und aktuelle Buspositionen der Stadt Kahta im offiziellen Portal einsehen.",
+        busBtn: "🚌 Otobüsüm Nerede öffnen",
+        sosKicker: "Sicherheit & Hilfe", sosTitle: "SOS — Notruf & Standort teilen",
+        sosDesc: "Teilen Sie Ihre GPS-Koordinaten mit einem Klick oder rufen Sie den Notdienst.",
+        btnShareLoc: "📤 Standort teilen",
+        call112: "📞 112 Notruf",
+        call156: "🛡 156 Gendarmerie",
+        directions: "🗺 Route", audio: "🔊 Ausführlicher Audio-Guide",
+        footerNote: "Studentenprojekt — Mehrsprachiger Reiseführer",
+        coordsLabel: "Koordinaten", km: "km",
+        gpsLocating: "📍 Standort wird ermittelt...",
+        gpsDenied: "📍 Standortfreigabe verweigert — Kahta-Zentrum als Referenz",
+        gpsUnavailable: "📍 Standortdienst in diesem Browser nicht verfügbar",
+        copied: "📋 Standortdaten in die Zwischenablage kopiert",
+        shared: "📤 Standortfreigabe geöffnet",
+        audioUnsupported: "Sprachausgabe wird von diesem Browser nicht unterstützt",
+        audioStopped: "⏹ Audio gestoppt"
+      },
+      fr: {
+        dir: "ltr",
+        preparedBy: "Préparé par Berat Kür",
+        welcomeTitle: "Bienvenue sur Discover Kahta",
+        welcomeSub: "Veuillez sélectionner votre langue • Devam etmek için dilinizi seçin",
+        welcomeAudioBtn: "🔊 Écouter l'intro audio",
+        stopAudioBtn: "⏹ Arrêter l'audio",
+        welcomeNarration: "Bienvenue dans le guide de voyage intelligent Discover Kahta. Du mont Nemrut et du pont de Cendere au tumulus de Karakuş et à Yeni Kale, découvrez les sites, les distances, la cuisine locale et les guides audio détaillés. Choisissez votre langue pour commencer.",
+        speakSection: "🔊 Écouter",
+        routeNarration: "Itinéraire d'une journée en Commagène : tumulus de Karakuş à neuf heures trente, pont de Cendere à dix heures trente, Arsemia et Yeni Kale à midi, et sommet du mont Nemrut à quinze heures trente pour le coucher du soleil.",
+        foodNarration: "Spécialités locales de Kahta et des environs : Çiğ Köfte d'Adıyaman, Hıtap, Besni Tavası, Köfte farcies, gratin d'aubergines et dessert Şillik.",
+        saucesNarration: "Sauces accompagnant les plats locaux : mélasse de grenade, sauce isot et piment fort, ainsi que sauce au yaourt à l'ail et au tahini.",
+        transportNarration: "Les points d'accès incluent l'aéroport d'Adıyaman, le centre de Kahta et la gare routière, ainsi que la route du mont Nemrut. Consultez aussi Kahta Otobüsüm Nerede pour le suivi des bus.",
+        sosNarration: "En cas d'urgence, partagez votre position en un clic ou appelez le 112 ou le 156.",
+        navMonuments: "Monuments", navRoute: "Itinéraire", navFood: "Cuisine", navSauces: "Sauces", navTransport: "Accès", navSos: "SOS", changeLang: "🌐 Langue",
+        musicOn: "🎵 Musique : Activée", musicOff: "🎵 Musique : Désactivée", stopAllBtn: "⏹ Arrêter l'audio",
+        heroTitle: "Explorez <em>Kahta</em>, cœur de la Commagène",
+        heroSub: "Parcourez les photos, vérifiez la distance et lancez l'itinéraire en un clic.",
+        btnLocate: "📍 Ma position & distance",
+        gpsDefault: "📍 Position en attente — Centre de Kahta par défaut",
+        gpsFound: "📍 GPS actif — Distances mises à jour",
+        sunTitle: "🌅 Compte à rebours Nemrut",
+        sunrise: "Lever du soleil", sunset: "Coucher du soleil",
+        coldAlert: "🧥 Conseil sommet : il fait bien plus frais au sommet du Nemrut. Prévoyez une veste chaude.",
+        monKicker: "Guide photo", monTitle: "Monuments, distance et itinéraire",
+        monSub: "Photos, distances et itinéraires pour 6 sites historiques.",
+        photoTag: "📷 Guide visuel",
+        foodBadge: "🍽 Plat local",
+        sauceBadge: "🫙 Sauce locale",
+        routeKicker: "Programme", routeTitle: "Circuit Commagène — 1 jour",
+        r1: "Tumulus de Karakuş", r1d: "Sépulture royale de Commagène avec colonne à l'aigle.",
+        r2: "Pont de Cendere", r2d: "Pont romain à arche unique vieux d'environ 1800 ans.",
+        r3: "Arsemia & Yeni Kale", r3d: "Capitale d'été et forteresse dominant la vallée.",
+        r4: "Sommet du mont Nemrut", r4d: "Statues monumentales et coucher de soleil.",
+        foodKicker: "Saveurs locales", foodTitle: "Cuisine",
+        f1: "Çiğ Köfte d'Adıyaman", f1d: "Spécialité au boulgour fin, épices locales et herbes fraîches.",
+        f2: "Hıtap", f2d: "Pain plat cuit au four garni de viande hachée épicée.",
+        f3: "Besni Tavası", f3d: "Plat mijoté au four avec agneau, poivrons, tomates et ail.",
+        f4: "Köfte farcies (İçli Köfte)", f4d: "Coque de boulgour garnie de viande hachée et de noix.",
+        f5: "Gratin d'aubergines", f5d: "Plat au four associant aubergines tranchées et viande.",
+        f6: "Dessert Şillik", f6d: "Crêpes fines superposées aux noix et sirop léger.",
+        saucesKicker: "Accompagnements", saucesTitle: "Sauces",
+        s1: "Mélasse de grenade (Nar Ekşisi)", s1d: "Sirop acidulé idéal pour les çiğ köfte et salades.",
+        s2: "Sauce İsot & piment fort", s2d: "Accompagnement fumé et relevé à base de piments séchés.",
+        s3: "Yaourt à l'ail / Sauce tahini", s3d: "Douceur crémeuse servie avec pâtisseries et plats.",
+        trKicker: "Accès & ligne en direct", trTitle: "Infos transport et lieux",
+        t1: "Aéroport d'Adıyaman (ADF)", t1d: "Accès aérien principal vers la région.",
+        t2: "Centre de Kahta — Girne / Gare routière", t2d: "Centre-ville, gare routière et point de départ.",
+        t3: "Kahta — Route du mont Nemrut", t3d: "Env. 43–45 km de route de montagne ; courte marche au sommet.",
+        busTitle: "🚌 Kahta Otobüsüm Nerede (Suivi bus en direct)",
+        busDesc: "Consultez les lignes de Kahta et la position des bus sur le portail officiel.",
+        busBtn: "🚌 Ouvrir Otobüsüm Nerede",
+        sosKicker: "Sécurité & aide", sosTitle: "SOS — Urgence et partage de position",
+        sosDesc: "Partagez vos coordonnées GPS en un clic ou appelez les secours.",
+        btnShareLoc: "📤 Partager position",
+        call112: "📞 112 Urgences",
+        call156: "🛡 156 Gendarmerie",
+        directions: "🗺 Itinéraire", audio: "🔊 Guide Audio Détaillé",
+        footerNote: "Projet étudiant — Guide de voyage multilingue",
+        coordsLabel: "Coordonnées", km: "km",
+        gpsLocating: "📍 Localisation en cours...",
+        gpsDenied: "📍 Autorisation refusée — Centre de Kahta par défaut",
+        gpsUnavailable: "📍 Géolocalisation indisponible sur ce navigateur",
+        copied: "📋 Coordonnées copiées dans le presse-papiers",
+        shared: "📤 Partage de position ouvert",
+        audioUnsupported: "La synthèse vocale n'est pas prise en charge par ce navigateur",
+        audioStopped: "⏹ Audio arrêté"
+      },
+      ar: {
+        dir: "rtl",
+        preparedBy: "أعدّه بيرت كور",
+        welcomeTitle: "مرحباً بكم في Discover Kahta",
+        welcomeSub: "يرجى اختيار لغتك للمتابعة • Devam etmek için dilinizi seçin",
+        welcomeAudioBtn: "🔊 استمع إلى المقدمة الصوتية",
+        stopAudioBtn: "⏹ إيقاف الصوت",
+        welcomeNarration: "مرحباً بكم في دليل السفر الذكي Discover Kahta. من جبل نمرود وجسر جندري إلى تل قراقوش وقلعة يني كالي، يمكنك استكشاف المعالم وقياس المسافات والتعرف على الأطباق المحلية والاستماع إلى الأدلة الصوتية المفصلة. اختر لغتك للبدء.",
+        speakSection: "🔊 استمع",
+        routeNarration: "برنامج كوماجين ليوم واحد: تل قراقوش في التاسعة والنصف صباحاً، جسر جندري في العاشرة والنصف، أرساميا ويني كالي في الثانية عشرة ظهراً، وقمة جبل نمرود في الثالثة والنصف عصراً لمشاهدة الغروب.",
+        foodNarration: "أشهر الأطباق المحلية في كاهتا والمنطقة: تشي كوفتة أديامان، هتاب، بسني تافاسي، الكبة المحشوة، صينية الباذنجان، وحلوى شليك.",
+        saucesNarration: "أبرز الصلصات المرافقة للأطباق المحلية: دبس الرمان، صلصة الإيسوت والفلفل الحار، وصلصة اللبن بالثوم والطحينة.",
+        transportNarration: "تشمل نقاط الوصول مطار أديامان، ومركز كاهتا ومنطقة الكراج، وطريق قمة جبل نمرود. كما يمكنك متابعة الحافلات مباشرة عبر نظام كاهتا أوتوبوسوم نيرده.",
+        sosNarration: "في حالات الطوارئ يمكنك مشاركة موقعك بلمسة واحدة أو الاتصال بالطوارئ 112 أو الجندرمة 156.",
+        navMonuments: "المعالم", navRoute: "المسار", navFood: "الأطعمة", navSauces: "الصلصات", navTransport: "المواصلات", navSos: "طوارئ", changeLang: "🌐 اللغة",
+        musicOn: "🎵 الموسيقى: تشغيل", musicOff: "🎵 الموسيقى: إيقاف", stopAllBtn: "⏹ إيقاف الصوت",
+        heroTitle: "اكتشف <em>كاهتا</em>، قلب مملكة كوماجين",
+        heroSub: "تصفح صور المعالم، واعرف المسافة من موقعك، واحصل على الاتجاهات بلمسة واحدة.",
+        btnLocate: "📍 تحديد موقعي وقياس المسافة",
+        gpsDefault: "📍 بانتظار الموقع — تم اعتماد مركز كاهتا كمرجع",
+        gpsFound: "📍 نظام GPS نشط — تم تحديث المسافات حسب موقعك",
+        sunTitle: "🌅 العد التنازلي لقمة نمرود",
+        sunrise: "الشروق", sunset: "الغروب",
+        coldAlert: "🧥 تنبيه القمة: جو قمة نمرود أبرد بكثير من وسط المدينة. يُنصح باصطحاب معطف دافئ.",
+        monKicker: "دليل الصور", monTitle: "المعالم والمسافة والاتجاهات",
+        monSub: "تصفح الصور والمسافات والاتجاهات لـ 6 معالم تاريخية.",
+        photoTag: "📷 دليل مرئي",
+        foodBadge: "🍽 طبق محلي",
+        sauceBadge: "🫙 صلصة محلية",
+        routeKicker: "خطة مقترحة", routeTitle: "مسار كوماجين ليوم واحد",
+        r1: "تل قراقوش الأثري", r1d: "مدفن ملكي لكوماجين يعلوه عمود يحمل تمثال النسر.",
+        r2: "جسر جندري الأثري", r2d: "جسر روماني حجري بقوس واحد يعود لنحو 1800 عام.",
+        r3: "أرساميا وقلعة يني كالي", r3d: "آثار العاصمة الصيفية والقلعة الصخرية المطلة على الوادي.",
+        r4: "قمة جبل نمرود", r4d: "تماثيل ضخمة وإطلالة مميزة عند غروب الشمس.",
+        foodKicker: "المطبخ المحلي", foodTitle: "الأطعمة",
+        f1: "تشي كوفتة أديامان", f1d: "طبق تقليدي بالبرغل الناعم والتوابل المحلية والخضرة الطازجة.",
+        f2: "هتاب", f2d: "فطيرة مخبوزة بحشوة اللحم المفروم المتبل والأعشاب.",
+        f3: "بسني تافاسي", f3d: "صينية فرن مطهوة بهدوء مع اللحم والفلفل والطماطم والثوم.",
+        f4: "كبة محشوة (إيتشلي كوفتة)", f4d: "قشرة برغل محشوة باللحم المتبل والجوز.",
+        f5: "صينية الباذنجان", f5d: "طبق فرن يجمع بين شرائح الباذنجان واللحم المتبل.",
+        f6: "حلوى شليك", f6d: "طبقات رقيقة مع الجوز والقطر الخفيف.",
+        saucesKicker: "المرافقات", saucesTitle: "الصلصات",
+        s1: "دبس الرمان (نار إكشيسي)", s1d: "دبس حامض يضيف نكهة مميزة للتشي كوفتة والسلطات.",
+        s2: "صلصة الإيسوت والفلفل الحار", s2d: "صلصة فلفل مجفف بالشمس بنكهة مدخنة وحرارة متوازنة.",
+        s3: "لبن بالثوم / صلصة الطحينة", s3d: "إضافة كريمية تُقدم مع المعجنات والأطباق الرئيسية.",
+        trKicker: "الوصول والخط المباشر", trTitle: "معلومات المواصلات والمواقع",
+        t1: "مطار أديامان (ADF)", t1d: "نقطة الوصول الجوي الرئيسية إلى المنطقة.",
+        t2: "مركز كاهتا — غيرني / محطة الحافلات", t2d: "وسط المدينة ومحطة الحافلات ونقطة الانطلاق للمواقع.",
+        t3: "كاهتا — طريق قمة جبل نمرود", t3d: "طريق جبلي بطول نحو 43–45 كم مع مشي قصير عند القمة.",
+        busTitle: "🚌 كاهتا أوتوبوسوم نيرده (تتبع الحافلات المباشر)",
+        busDesc: "استعرض خطوط بلدية كاهتا ومواقع الحافلات الحالية عبر البوابة الرسمية.",
+        busBtn: "🚌 فتح أوتوبوسوم نيرده",
+        sosKicker: "السلامة والمساعدة", sosTitle: "SOS — المساعدة الطارئة ومشاركة الموقع",
+        sosDesc: "شارك إحداثيات موقعك بنقرة واحدة أو اتصل بأرقام الطوارئ.",
+        btnShareLoc: "📤 مشاركة موقعي",
+        call112: "📞 112 الطوارئ",
+        call156: "🛡 156 الجندرمة",
+        directions: "🗺 الاتجاهات", audio: "🔊 الدليل الصوتي المفصل",
+        footerNote: "مشروع طلابي — دليل سياحي متعدد اللغات",
+        coordsLabel: "الإحداثيات", km: "كم",
+        gpsLocating: "📍 جارٍ تحديد الموقع...",
+        gpsDenied: "📍 تم رفض إذن الموقع — تم اعتماد مركز كاهتا كمرجع",
+        gpsUnavailable: "📍 خدمة تحديد الموقع غير متوفرة في هذا المتصفح",
+        copied: "📋 تم نسخ بيانات الموقع إلى الحافظة",
+        shared: "📤 تم فتح مشاركة الموقع",
+        audioUnsupported: "متصفحك لا يدعم القراءة الصوتية",
+        audioStopped: "⏹ تم إيقاف الصوت"
+      },
+      es: {
+        dir: "ltr",
+        preparedBy: "Preparado por Berat Kür",
+        welcomeTitle: "Bienvenido a Discover Kahta",
+        welcomeSub: "Selecciona tu idioma para continuar • Devam etmek için dilinizi seçin",
+        welcomeAudioBtn: "🔊 Escuchar guía de inicio",
+        stopAudioBtn: "⏹ Detener audio",
+        welcomeNarration: "Bienvenido a la guía de viaje inteligente Discover Kahta. Desde el monte Nemrut y el puente de Cendere hasta el túmulo de Karakuş y Yeni Kale, puedes explorar lugares históricos, medir distancias, conocer platos locales y escuchar audioguías detalladas. Elige tu idioma para comenzar.",
+        speakSection: "🔊 Escuchar",
+        routeNarration: "Ruta de Comagene en un día: túmulo de Karakuş a las nueve y media, puente de Cendere a las diez y media, Arsemia y Yeni Kale al mediodía, y cumbre del monte Nemrut a las quince y media para el atardecer.",
+        foodNarration: "Platos locales destacados de Kahta y la región: Çiğ Köfte de Adıyaman, Hıtap, Besni Tavası, Köfte rellenas, pastel de berenjena y postre Şillik.",
+        saucesNarration: "Salsas principales para acompañar los platos locales: melaza de granada, salsa de isot y ají picante, y salsa de yogur con ajo y tahini.",
+        transportNarration: "Los puntos de transporte incluyen el aeropuerto de Adıyaman, el centro de Kahta y la estación de autobuses, además de la carretera a la cumbre del monte Nemrut. También puedes consultar Kahta Otobüsüm Nerede para ver autobuses en vivo.",
+        sosNarration: "En emergencias, puedes compartir tu ubicación en un toque o llamar al 112 o al 156.",
+        navMonuments: "Monumentos", navRoute: "Itinerario", navFood: "Comida", navSauces: "Salsas", navTransport: "Transporte", navSos: "SOS", changeLang: "🌐 Idioma",
+        musicOn: "🎵 Música: Activada", musicOff: "🎵 Música: Desactivada", stopAllBtn: "⏹ Detener audio",
+        heroTitle: "Explora <em>Kahta</em>, corazón de Comagene",
+        heroSub: "Mira fotos de monumentos, consulta la distancia y obtén indicaciones en un toque.",
+        btnLocate: "📍 Mi ubicación y distancia",
+        gpsDefault: "📍 Esperando ubicación — Centro de Kahta como referencia",
+        gpsFound: "📍 GPS activo — Distancias actualizadas",
+        sunTitle: "🌅 Cuenta regresiva cumbre Nemrut",
+        sunrise: "Amanecer", sunset: "Atardecer",
+        coldAlert: "🧥 Aviso de cumbre: en Nemrut hace mucho más frío que en el centro. Lleva abrigo.",
+        monKicker: "Guía fotográfica", monTitle: "Monumentos, distancia y ruta",
+        monSub: "Consulta fotos, distancias e indicaciones de 6 lugares históricos.",
+        photoTag: "📷 Guía visual",
+        foodBadge: "🍽 Plato local",
+        sauceBadge: "🫙 Salsa local",
+        routeKicker: "Plan sugerido", routeTitle: "Ruta de Comagene — 1 día",
+        r1: "Túmulo de Karakuş", r1d: "Tumba real de Comagene con columna del águila.",
+        r2: "Puente de Cendere", r2d: "Puente romano de un solo arco con unos 1800 años.",
+        r3: "Arsemia y Yeni Kale", r3d: "Capital de verano y fortaleza sobre el valle.",
+        r4: "Cumbre del monte Nemrut", r4d: "Estatuas colosales y vistas del atardecer.",
+        foodKicker: "Cocina local", foodTitle: "Comida",
+        f1: "Çiğ Köfte de Adıyaman", f1d: "Especialidad tradicional con bulgur fino, especias y verduras frescas.",
+        f2: "Hıtap", f2d: "Pan plano horneado relleno de carne picada condimentada y hierbas.",
+        f3: "Besni Tavası", f3d: "Plato al horno cocinado lentamente con cordero, pimientos, tomate y ajo.",
+        f4: "Köfte rellenas (İçli Köfte)", f4d: "Cubierta de bulgur rellena de carne especiada y nueces.",
+        f5: "Gratinado de berenjena", f5d: "Plato al horno con láminas de berenjena y carne sazonada.",
+        f6: "Postre Şillik", f6d: "Capas finas de masa con nueces y almíbar suave.",
+        saucesKicker: "Acompañamientos", saucesTitle: "Salsas",
+        s1: "Melaza de granada (Nar Ekşisi)", s1d: "Jarabe ácido tradicional para çiğ köfte y ensaladas.",
+        s2: "Salsa de isot y ají picante", s2d: "Acompañamiento ahumado de pimientos secos con picante equilibrado.",
+        s3: "Yogur con ajo / Salsa de tahini", s3d: "Opción cremosa servida junto a masas y platos salados.",
+        trKicker: "Acceso y línea en vivo", trTitle: "Transporte y ubicaciones",
+        t1: "Aeropuerto de Adıyaman (ADF)", t1d: "Acceso aéreo principal a la región.",
+        t2: "Centro de Kahta — Girne / Terminal", t2d: "Centro urbano, terminal de buses y punto de partida.",
+        t3: "Kahta — Carretera cumbre Nemrut", t3d: "Unos 43–45 km de montaña; requiere una breve caminata arriba.",
+        busTitle: "🚌 Kahta Otobüsüm Nerede (Rastreo de buses en vivo)",
+        busDesc: "Consulta las rutas de Kahta y la posición de buses en el portal oficial.",
+        busBtn: "🚌 Abrir Otobüsüm Nerede",
+        sosKicker: "Seguridad y ayuda", sosTitle: "SOS — Emergencia y ubicación",
+        sosDesc: "Comparte tus coordenadas GPS en un toque o llama a emergencias.",
+        btnShareLoc: "📤 Compartir ubicación",
+        call112: "📞 112 Emergencias",
+        call156: "🛡 156 Gendarmería",
+        directions: "🗺 Ruta", audio: "🔊 Audio Guía Detallada",
+        footerNote: "Proyecto estudiantil — Guía turística multilingüe",
+        coordsLabel: "Coordenadas", km: "km",
+        gpsLocating: "📍 Obteniendo ubicación...",
+        gpsDenied: "📍 Permiso denegado — Centro de Kahta como referencia",
+        gpsUnavailable: "📍 Geolocalización no disponible en este navegador",
+        copied: "📋 Ubicación copiada al portapapeles",
+        shared: "📤 Compartir ubicación abierto",
+        audioUnsupported: "Tu navegador no admite síntesis de voz",
+        audioStopped: "⏹ Audio detenido"
+      },
+      ku: {
+        dir: "ltr",
+        preparedBy: "Ji aliyê Berat Kür ve hate amadekirin",
+        welcomeTitle: "Bi xêr hatin Discover Kahta",
+        welcomeSub: "Ji bo berdewamkirinê zimanê xwe hilbijêrin • Devam etmek için dilinizi seçin",
+        welcomeAudioBtn: "🔊 Rêberê Dengî yê Destpêkê Guhdar Bike",
+        stopAudioBtn: "⏹ Deng Rawestîne",
+        welcomeNarration: "Hûn bi xêr hatin rêberê geştê yê biaqil Discover Kahta. Ji Çiyayê Nemrûdê û Pira Cendereyê heta Tûmûlûsa Qereqûşê û Kela Nû, hûn dikarin cihên dîrokî bigerin, dûrahiyan bipîvin, xwarinên herêmî bibînin û guhdarî rêberên dengî yên berfireh bikin. Ji bo destpêkirinê zimanê xwe hilbijêrin.",
+        speakSection: "🔊 Guhdar Bike",
+        routeNarration: "Rêwîtiya rojekê ya Kommageneyê: Saet neh û nîv Tûmûlûsa Qereqûşê, deh û nîv Pira Cendereyê, diwanzdeh li Arsemîa û Kela Nû, û pênc û nîv li lûtkeya Çiyayê Nemrûdê ji bo rojavabûnê.",
+        foodNarration: "Xwarinên herêmî yên navdar ên Kaxtayê û derdorê: Çîkofteya Semsûrê, Hîtap, Tavaya Bêsnîyê, Kutilkên Dagirtî, Rêzkirina Balîcanê û şîraniya Şîllîkê.",
+        saucesNarration: "Sosên sereke yên li gel xwarinên herêmî tên pêşkêşkirin: Doşava Hinarê, Sosa Îsot û Îsota Tûj, û Sosa Mastê bi Sîr û Tahînê.",
+        transportNarration: "Xalên gihîştinê Balafirgeha Semsûrê, Navenda Kaxtayê û herêma Garajê, û rêya lûtkeya Çiyayê Nemrûdê ne. Her wiha hûn dikarin bi pergala Kahta Otobüsüm Nerede otobûsan bişopînin.",
+        sosNarration: "Di rewşên awarte de hûn dikarin cihê xwe bi yek bişkokê parve bikin an telefonî 112 Acîl û 156 Cendirmeyan bikin.",
+        navMonuments: "Cihên Dîrokî", navRoute: "Rêya Geştê", navFood: "Xwarin", navSauces: "Sos", navTransport: "Gihîştin", navSos: "SOS", changeLang: "🌐 Ziman",
+        musicOn: "🎵 Muzîk: Vekirî", musicOff: "🎵 Muzîk: Girtî", stopAllBtn: "⏹ Deng Rawestîne",
+        heroTitle: "<em>Kahta</em>, Dilê Kommageneyê Keşf Bike",
+        heroSub: "Li wêneyên cihên dîrokî binêre, dûrahiya li gorî cihê xwe bibîne û bi yek destlêdanê rêtarîfê bigire.",
+        btnLocate: "📍 Cihê Min Bibîne & Dûrahiyê Bipîve",
+        gpsDefault: "📍 Li bendêya cihî ye — Navenda Kaxtayê wekî referans hate girtin",
+        gpsFound: "📍 GPSa zindî çalak e — Dûrahî li gorî cihê we hatin nûkirin",
+        sunTitle: "🌅 Hejmartina Berepaş a Lûtkeya Nemrûdê",
+        sunrise: "Hilatina Rojê", sunset: "Rojavabûn",
+        coldAlert: "🧥 Hişyariya lûtkeyê: Lûtkeya Nemrûdê ji navendê pir sartir dibe. Ceketeke stûr bi xwe re bibin.",
+        monKicker: "Rêberê Wêneyan", monTitle: "Cihên Dîrokî, Dûrahî û Rêtarîf",
+        monSub: "Hûn dikarin wêne, dûrahî û rêtarîfên 6 cihên dîrokî bibînin.",
+        photoTag: "📷 Rêberê Dîtbarî",
+        foodBadge: "🍽 Xwarina Herêmî",
+        sauceBadge: "🫙 Sosa Herêmî",
+        routeKicker: "Plana Pêşniyarkirî", routeTitle: "Rêya 1 Rojî ya Kommageneyê",
+        r1: "Tûmûlûsa Qereqûşê", r1d: "Gora bîrdariyê ya jinên malbata qraliyetê ya Kommageneyê û stûna bazê.",
+        r2: "Pira Cendereyê", r2d: "Pira kevirî ya Romayê ya bi yek kemerê ku ji serdema antîk maye.",
+        r3: "Arsemîa & Kela Nû", r3d: "Bermahiyên paytexta havînê û kela asê ya li ser gelî.",
+        r4: "Lûtkeya Çiyayê Nemrûdê", r4d: "Peykerên xwedawendan ên mezin û dîmena rojavabûnê ya bêhempa.",
+        foodKicker: "Metbexa Herêmî", foodTitle: "Xwarin",
+        f1: "Çîkofteya Semsûrê", f1d: "Tama klasîk a ku bi savara hûr, biharên herêmî û keskahiya teze tê amadekirin.",
+        f2: "Hîtap", f2d: "Xwarina herêmî ya ku hevîrê wê yê vekirî bi qîma biharatî di firinê de tê pijandin.",
+        f3: "Tavaya Bêsnîyê", f3d: "Xwarina firinê ya hezkirî ku bi goştê mihê, îsot, firingî û sîrê hêdî tê pijandin.",
+        f4: "Kutilkên Dagirtî (İçli Köfte)", f4d: "Tama kevneşopî ya ku di qalikê savarê de bi goşt û gûzê tê çêkirin.",
+        f5: "Rêzkirina Balîcanê", f5d: "Xwarina tepsiyê ya herêmî ya bi lihevhatina balîcanên perçekirî û qîmayê.",
+        f6: "Şîraniya Şîllîkê", f6d: "Şîraniya sivik û kevneşopî ya ku krepên tenik bi gûz û şerbetê tîne ba hev.",
+        saucesKicker: "Hevalên Xwarinê", saucesTitle: "Sos",
+        s1: "Doşava Hinarê (Nar Ekşisi)", s1d: "Sosa kevneşopî ya ku tirşiya xweş û bêhneke zindî dide çîkofte û seleteyan.",
+        s2: "Sosa Îsot & Îsota Tûj", s2d: "Hevalê herêmî yê bi îsotên di ber tavê de hişkkirî û bi tûjiya hevseng.",
+        s3: "Mastê bi Sîr / Sosa Tahînê", s3d: "Alternatîfa sosê ya nermker ku li gel hevîrkarî û xwarinên herêmî tê pêşkêşkirin.",
+        trKicker: "Gihîştina Herêmê & Xeta Zindî", trTitle: "Agahiyên Gihîştinê û Cih",
+        t1: "Balafirgeha Semsûrê (ADF)", t1d: "Xala gihîştina bi rêya hewayî ya herêmê ye.",
+        t2: "Navenda Kaxtayê — Taxa Girne / Herêma Garajê", t2d: "Navenda navçeyê, garaj û xala derketinê ya bo rêyên derdorê ye.",
+        t3: "Kaxta — Rêya Lûtkeya Çiyayê Nemrûdê", t3d: "Rêya çiyayî ya nêzîkî 43–45 km; li lûtkeyê meşeke kurt hewce dike.",
+        busTitle: "🚌 Kâhta Otobüsüm Nerede (Şopandina Otobûsê ya Zindî)",
+        busDesc: "Hûn dikarin xetên Şaredariya Kaxtayê û cihên otobûsan ên rojane li ser sîstema fermî bibînin.",
+        busBtn: "🚌 Otobüsüm Nerede Veke",
+        sosKicker: "Ewlehî & Alîkarî", sosTitle: "SOS — Alîkariya Acîl & Parvekirina Cihî",
+        sosDesc: "Gava li lûtkeyê an li ser rê hewcedariya we bi alîkariyê hebe, hûn dikarin koordînata GPSê bi yek bişkokê parve bikin.",
+        btnShareLoc: "📤 Cihê Min Parve Bike",
+        call112: "📞 112 Acîl",
+        call156: "🛡 156 Cendirme",
+        directions: "🗺 Rêtarîf", audio: "🔊 Rêberê Dengî yê Berfireh",
+        footerNote: "Projeya Xwendekaran — Rêberê Geştê yê Pirzimanî",
+        coordsLabel: "Koordînat", km: "km",
+        gpsLocating: "📍 Cih tê wergirtin...",
+        gpsDenied: "📍 Destûra cihî nehat dayîn — Navenda Kaxtayê wekî referans hate girtin",
+        gpsUnavailable: "📍 Di vî gerokî de servîsa cihî nayê bikaranîn",
+        copied: "📋 Agahiya cihî li clipboardê hate kopîkirin",
+        shared: "📤 Parvekirina cihî hate vekirin",
+        audioUnsupported: "Geroka we xwendina dengî piştgirî nake",
+        audioStopped: "⏹ Deng hate rawestandin"
+      },
+      ja: {
+        dir: "ltr",
+        preparedBy: "制作：Berat Kür",
+        welcomeTitle: "Discover Kahta へようこそ",
+        welcomeSub: "続けるには言語を選択してください • Devam etmek için dilinizi seçin",
+        welcomeAudioBtn: "🔊 イントロ音声ガイドを再生",
+        stopAudioBtn: "⏹ 音声を停止",
+        welcomeNarration: "スマートトラベルガイド Discover Kahta へようこそ。ネムルート山やジェンデレ橋からカラクシュ墳丘墓、イェニ・カレ城塞まで、史跡の探索や距離の確認、郷土料理や詳しい音声ガイドをお楽しみいただけます。言語を選んで始めてください。",
+        speakSection: "🔊 音声で聴く",
+        routeNarration: "コンマゲネ1日ルート：9時30分にカラクシュ墳丘墓、10時30分にジェンデレ橋、12時にアルセミアとイェニ・カレ城塞、15時30分に夕日を見るためネムルート山山頂へ向かいます。",
+        foodNarration: "カフタ周辺の人気郷土料理：アドゥヤマン・チーキョフテ、ヒタップ、ベスニ・タヴァス、イチリ・キョフテ、ナスのオーブン料理、そしてデザートはシッリッキです。",
+        saucesNarration: "郷土料理に添えられる主なソース：ザクロのモラセス、イソットと唐辛子ソース、にんにくヨーグルトとタヒニのソースです。",
+        transportNarration: "主な交通拠点はアドゥヤマン空港、カフタ中心部とバスターミナル周辺、ネムルート山山頂道路です。カフタ・オトビュスム・ネレデでバスの現在地も確認できます。",
+        sosNarration: "緊急時はワンタップで現在地を共有したり、112番緊急通報や156番ジャンダルマに連絡できます。",
+        navMonuments: "史跡", navRoute: "ルート", navFood: "料理", navSauces: "ソース", navTransport: "交通", navSos: "SOS", changeLang: "🌐 言語選択",
+        musicOn: "🎵 音楽: オン", musicOff: "🎵 音楽: オフ", stopAllBtn: "⏹ 音声を停止",
+        heroTitle: "コンマゲネの中心 <em>カフタ</em> を巡る",
+        heroSub: "史跡の写真や現在地からの距離を確認し、ワンタップでルート案内を開けます。",
+        btnLocate: "📍 現在地を取得して距離を測定",
+        gpsDefault: "📍 位置情報待機中 — カフタ中心部を基準に表示",
+        gpsFound: "📍 ライブGPS有効 — 現在地からの距離に更新済み",
+        sunTitle: "🌅 ネムルート山頂カウントダウン",
+        sunrise: "日の出", sunset: "日没",
+        coldAlert: "🧥 山頂注意：ネムルート山頂は市街地よりかなり冷え込みます。暖かい上着をお持ちください。",
+        monKicker: "フォトガイド", monTitle: "史跡・距離・ルート案内",
+        monSub: "6つの史跡の写真、距離、ルート案内を確認できます。",
+        photoTag: "📷 ビジュアルガイド",
+        foodBadge: "🍽 郷土料理",
+        sauceBadge: "🫙 郷土ソース",
+        routeKicker: "おすすめプラン", routeTitle: "コンマゲネ 1日ルート",
+        r1: "カラクシュ墳丘墓", r1d: "鷲の柱が残るコンマゲネ王家女性のための墳丘墓。",
+        r2: "ジェンデレ橋", r2d: "約1800年前の切り石造り単アーチ式ローマ橋。",
+        r3: "アルセミア＆イェニ・カレ", r3d: "夏の都の遺構と渓谷を見下ろす断崖の城塞。",
+        r4: "ネムルート山山頂", r4d: "巨大な神々の像と夕日の絶景。",
+        foodKicker: "郷土料理", foodTitle: "料理",
+        f1: "アドゥヤマン・チーキョフテ", f1d: "細かいブルグルとスパイス、新鮮なハーブで仕上げる伝統の一品。",
+        f2: "ヒタップ", f2d: "味付け挽肉と香味野菜を包んで焼き上げる平焼きパン料理。",
+        f3: "ベスニ・タヴァス", f3d: "ラム肉、ピーマン、トマト、にんにくをじっくり焼くオーブン料理。",
+        f4: "イチリ・キョフテ", f4d: "ブルグルの生地にスパイス挽肉とくるみを包んだ伝統料理。",
+        f5: "ナスのオーブン焼き", f5d: "スライスしたナスと味付け肉を重ねて焼く郷土料理。",
+        f6: "シッリッキ・デザート", f6d: "薄焼き生地にくるみとやさしいシロップを合わせた伝統菓子。",
+        saucesKicker: "付け合わせ", saucesTitle: "ソース",
+        s1: "ザクロのモラセス（ナル・エクシシ）", s1d: "チーキョフテやサラダに爽やかな酸味を加える伝統ソース。",
+        s2: "イソット＆唐辛子ソース", s2d: "天日干し唐辛子を使ったスモーキーで程よい辛さのソース。",
+        s3: "にんにくヨーグルト／タヒニソース", s3d: "粉もの料理や肉料理に寄り添うまろやかなソース。",
+        trKicker: "アクセス＆ライブ路線", trTitle: "交通情報とスポット",
+        t1: "アドゥヤマン空港 (ADF)", t1d: "地域への空の玄関口です。",
+        t2: "カフタ中心部 — ギルネ地区／バスターミナル", t2d: "中心街やバスターミナル、周辺観光の出発拠点です。",
+        t3: "カフタ — ネムルート山山頂道路", t3d: "約43〜45kmの山岳ルート。山頂では短い徒歩が必要です。",
+        busTitle: "🚌 カフタ・オトビュスム・ネレデ（バス現在地）",
+        busDesc: "カフタ市の路線と最新のバス位置を公式システムで確認できます。",
+        busBtn: "🚌 オトビュスム・ネレデを開く",
+        sosKicker: "安全＆サポート", sosTitle: "SOS — 緊急通報と位置情報共有",
+        sosDesc: "山頂や移動中に助けが必要な場合、ワンタップでGPS座標を共有できます。",
+        btnShareLoc: "📤 現在地を共有",
+        call112: "📞 112 緊急通報",
+        call156: "🛡 156 ジャンダルマ",
+        directions: "🗺 ルート案内", audio: "🔊 詳しい音声ガイド",
+        footerNote: "学生プロジェクト — 多言語トラベルガイド",
+        coordsLabel: "座標", km: "km",
+        gpsLocating: "📍 位置情報を取得中...",
+        gpsDenied: "📍 位置情報が許可されませんでした — カフタ中心部を基準に表示",
+        gpsUnavailable: "📍 このブラウザでは位置情報サービスを利用できません",
+        copied: "📋 位置情報をクリップボードにコピーしました",
+        shared: "📤 位置情報の共有を開きました",
+        audioUnsupported: "お使いのブラウザは音声読み上げに対応していません",
+        audioStopped: "⏹ 音声を停止しました"
+      },
+      zh: {
+        dir: "ltr",
+        preparedBy: "由 Berat Kür 制作",
+        welcomeTitle: "欢迎来到 Discover Kahta",
+        welcomeSub: "请选择您的语言以继续 • Devam etmek için dilinizi seçin",
+        welcomeAudioBtn: "🔊 播放开场语音导览",
+        stopAudioBtn: "⏹ 停止语音",
+        welcomeNarration: "欢迎来到 Discover Kahta 智能旅行指南。从内姆鲁特山和詹代雷桥到卡拉库什王室封土墓与耶尼卡莱城堡，您可以浏览古迹、测量距离、了解当地美食并收听详细语音导览。请选择您的语言开始探索。",
+        speakSection: "🔊 语音收听",
+        routeNarration: "科马吉内一日游路线：九点半前往卡拉库什王室封土墓，十点半前往詹代雷桥，中午十二点参观阿尔塞米亚与耶尼卡莱城堡，十五点半前往内姆鲁特山顶欣赏日落。",
+        foodNarration: "卡赫塔及周边特色美食：阿德亚曼生肉丸、赫塔普烤饼、贝斯尼烤盘菜、馅料烤肉丸、茄子烤盘菜以及甜点希利克。",
+        saucesNarration: "搭配当地菜肴的主要酱汁：石榴糖浆、伊索特辣椒酱以及蒜香酸奶与芝麻酱。",
+        transportNarration: "交通节点包括阿德亚曼机场、卡赫塔市中心与汽车站区域，以及通往内姆鲁特山顶的山路。您还可通过卡赫塔公交实时查询系统查看公交动态。",
+        sosNarration: "遇到紧急情况时，可一键分享位置坐标，或拨打 112 急救与 156 宪兵电话。",
+        navMonuments: "历史古迹", navRoute: "游览路线", navFood: "特色美食", navSauces: "风味酱汁", navTransport: "交通信息", navSos: "紧急求助", changeLang: "🌐 语言选择",
+        musicOn: "🎵 背景音乐：开", musicOff: "🎵 背景音乐：关", stopAllBtn: "⏹ 停止语音",
+        heroTitle: "探索<em>卡赫塔</em>，科马吉内的核心",
+        heroSub: "浏览古迹插画、查看当前距离，并一键开启路线导航。",
+        btnLocate: "📍 定位并测量距离",
+        gpsDefault: "📍 等待定位 — 默认以卡赫塔中心为参考",
+        gpsFound: "📍 实时 GPS 已启用 — 已按您的位置更新距离",
+        sunTitle: "🌅 内姆鲁特山顶倒计时",
+        sunrise: "日出", sunset: "日落",
+        coldAlert: "🧥 山顶提示：内姆鲁特山顶比市区凉爽得多，请携带保暖外套。",
+        monKicker: "图文导览", monTitle: "历史古迹、距离与路线",
+        monSub: "查看 6 处历史古迹的插画、距离与导航路线。",
+        photoTag: "📷 图文导览",
+        foodBadge: "🍽 特色美食",
+        sauceBadge: "🫙 地方酱汁",
+        routeKicker: "推荐行程", routeTitle: "科马吉内一日游路线",
+        r1: "卡拉库什王室封土墓", r1d: "为科马吉内王室女性建造的封土墓与鹰雕石柱。",
+        r2: "詹代雷桥", r2d: "约有1800年历史、由巨型切石砌成的单拱古罗马石桥。",
+        r3: "阿尔塞米亚与耶尼卡莱城堡", r3d: "夏都遗迹与俯瞰河谷的陡峭城堡。",
+        r4: "内姆鲁特山顶", r4d: "巨型众神雕像与壮丽的日落景观。",
+        foodKicker: "地方风味", foodTitle: "特色美食",
+        f1: "阿德亚曼生肉丸", f1d: "选用细碎布尔格麦、本地香料与新鲜绿叶调制的经典美食。",
+        f2: "赫塔普烤饼", f2d: "薄饼包裹调味肉馅与香草入炉烘烤的传统美食。",
+        f3: "贝斯尼烤盘菜", f3d: "以羊肉、辣椒、番茄与大蒜慢烤入味的烤盘菜肴。",
+        f4: "馅料烤肉丸（伊奇利烤肉丸）", f4d: "布尔格麦外皮包裹调味肉馅与核桃的传统美食。",
+        f5: "茄子烤盘菜", f5d: "将切片茄子与调味肉馅层叠烘烤的特色菜。",
+        f6: "希利克甜点", f6d: "薄饼层叠搭配核桃与清甜糖浆的传统甜点。",
+        saucesKicker: "风味搭配", saucesTitle: "风味酱汁",
+        s1: "石榴糖浆（纳尔埃克希西）", s1d: "酸甜果香浓郁，常用于搭配生肉丸与沙拉。",
+        s2: "伊索特与辣椒酱", s2d: "由晒干辣椒制成，带有烟熏风味与适中辣度。",
+        s3: "蒜香酸奶 / 芝麻酱", s3d: "口感绵密柔和，适合搭配面食与烤盘菜肴。",
+        trKicker: "区域交通与实时线路", trTitle: "交通信息与地点",
+        t1: "阿德亚曼机场 (ADF)", t1d: "前往该地区的主要航空交通节点。",
+        t2: "卡赫塔市中心 — 格尔内区 / 汽车站", t2d: "区中心、汽车站及前往周边景点的出发点。",
+        t3: "卡赫塔 — 内姆鲁特山顶公路", t3d: "约 43–45 公里山路，登顶后需步行一小段。",
+        busTitle: "🚌 卡赫塔公交实时查询（Otobüsüm Nerede）",
+        busDesc: "通过官方系统查看卡赫塔市政公交线路与车辆实时位置。",
+        busBtn: "🚌 打开 Otobüsüm Nerede",
+        sosKicker: "安全与援助", sosTitle: "SOS — 紧急求助与位置分享",
+        sosDesc: "在山顶或途中需要帮助时，可一键分享您的 GPS 坐标。",
+        btnShareLoc: "📤 分享我的位置",
+        call112: "📞 112 急救",
+        call156: "🛡 156 宪兵",
+        directions: "🗺 路线导航", audio: "🔊 详细语音导览",
+        footerNote: "学生项目 — 多语言旅游指南",
+        coordsLabel: "坐标", km: "公里",
+        gpsLocating: "📍 正在获取位置...",
+        gpsDenied: "📍 未授予位置权限 — 默认以卡赫塔中心为参考",
+        gpsUnavailable: "📍 当前浏览器不支持定位服务",
+        copied: "📋 位置信息已复制到剪贴板",
+        shared: "📤 已打开位置分享",
+        audioUnsupported: "您的浏览器不支持语音朗读",
+        audioStopped: "⏹ 已停止语音"
+      }
+    };
+
+    const VOICE_LANG = {
+      tr: "tr-TR", en: "en-US", de: "de-DE", fr: "fr-FR",
+      ar: "ar-SA", es: "es-ES", ku: "ku-TR", ja: "ja-JP", zh: "zh-CN"
+    };
+
+    const KAHTA_CENTER = { lat: 37.7833, lon: 38.6167 };
+    let currentLang = "tr";
+    let hasChosenLanguage = false;
+    let userCoords = { ...KAHTA_CENTER };
+    let hasLiveGps = false;
+
+    const langScreen = document.getElementById("langScreen");
+    const toastEl = document.getElementById("toast");
+    const topRightCreditEl = document.getElementById("topRightCredit");
+
+    function updateTopRightCredit(lang = currentLang) {
+      if (!topRightCreditEl) return;
+      const isIntroVisible = langScreen && !langScreen.classList.contains("hidden") && !hasChosenLanguage;
+      if (isIntroVisible) {
+        topRightCreditEl.textContent = UI.en.preparedBy;
+        return;
+      }
+      const t = UI[lang] || UI.tr;
+      topRightCreditEl.textContent = t.preparedBy || UI.tr.preparedBy;
+    }
+
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toastEl.classList.remove("show"), 2600);
+    }
+
+    const AmbientAudio = (() => {
+      let ctx = null, masterGain = null, isPlaying = false, isDucked = false, timerId = null;
+      const NOTES = [220.0, 261.63, 329.63, 392.0, 440.0];
+
+      function ensureContext() {
+        if (!ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return false;
+          ctx = new AudioCtx();
+          masterGain = ctx.createGain();
+          masterGain.gain.value = 0.0001;
+          masterGain.connect(ctx.destination);
+        }
+        if (ctx.state === "suspended") {
+          ctx.resume().catch(() => {});
+        }
+        return true;
+      }
+
+      function playChime(freq, duration = 2.6) {
+        if (!ctx || !masterGain || !isPlaying) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(0.055, now + 0.35);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start(now);
+        osc.stop(now + duration + 0.05);
+      }
+
+      function applyGainTarget() {
+        if (!ctx || !masterGain) return;
+        const now = ctx.currentTime;
+        const target = !isPlaying ? 0.0001 : (isDucked ? 0.06 : 0.42);
+        masterGain.gain.cancelScheduledValues(now);
+        masterGain.gain.setTargetAtTime(target, now, 0.14);
+      }
+
+      function start() {
+        if (!ensureContext()) {
+          showToast(UI[currentLang].audioUnsupported);
+          return false;
+        }
+        isPlaying = true;
+        applyGainTarget();
+        let idx = 0;
+        playChime(NOTES[idx % NOTES.length], 3.0);
+        clearInterval(timerId);
+        timerId = setInterval(() => {
+          if (!isPlaying) return;
+          idx++;
+          playChime(NOTES[idx % NOTES.length], 3.0);
+        }, 2200);
+        syncButtons();
+        return true;
+      }
+
+      function stop() {
+        isPlaying = false;
+        isDucked = false;
+        clearInterval(timerId);
+        applyGainTarget();
+        syncButtons();
+      }
+
+      function toggle() {
+        if (isPlaying) {
+          stop();
+          showToast(UI[currentLang].musicOff);
+        } else if (start()) {
+          showToast(UI[currentLang].musicOn);
+        }
+      }
+
+      function setDucked(duck) {
+        isDucked = Boolean(duck);
+        applyGainTarget();
+      }
+
+      function syncButtons() {
+        const t = UI[currentLang] || UI.tr;
+        const btn = document.getElementById("btnToggleMusic");
+        if (btn) btn.textContent = isPlaying ? t.musicOn : t.musicOff;
+      }
+
+      return { start, stop, toggle, setDucked, syncButtons };
+    })();
+
+    function speakText(text, langCode = currentLang) {
+      const t = UI[langCode] || UI.tr;
+      if (!("speechSynthesis" in window)) {
+        showToast(t.audioUnsupported);
+        return;
+      }
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = VOICE_LANG[langCode] || "tr-TR";
+        utter.rate = 0.96;
+        utter.pitch = 1.0;
+
+        const voices = window.speechSynthesis.getVoices();
+        const prefix = (VOICE_LANG[langCode] || "tr").split("-")[0];
+        const match = voices.find(v => v.lang.toLowerCase().startsWith(prefix));
+        if (match) utter.voice = match;
+
+        utter.onstart = () => AmbientAudio.setDucked(true);
+        utter.onend = () => AmbientAudio.setDucked(false);
+        utter.onerror = () => AmbientAudio.setDucked(false);
+
+        AmbientAudio.setDucked(true);
+        window.speechSynthesis.speak(utter);
+      } catch (e) {
+        AmbientAudio.setDucked(false);
+        showToast(t.audioUnsupported);
+      }
+    }
+
+    function stopAllAudio() {
+      try {
+        if ("speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+        }
+      } catch (e) {}
+      AmbientAudio.stop();
+      showToast(UI[currentLang].audioStopped);
+    }
+
+    const WELCOME_CYCLE = [
+      { lang: "tr", title: "Discover Kahta'ya Hoş Geldiniz", sub: "Devam etmek için dilinizi seçin • Please select your language to continue" },
+      { lang: "en", title: "Welcome to Discover Kahta", sub: "Please select your language to continue • Devam etmek için dilinizi seçin" },
+      { lang: "de", title: "Willkommen bei Discover Kahta", sub: "Bitte wählen Sie Ihre Sprache • Devam etmek için dilinizi seçin" },
+      { lang: "fr", title: "Bienvenue sur Discover Kahta", sub: "Veuillez sélectionner votre langue • Devam etmek için dilinizi seçin" },
+      { lang: "ar", title: "مرحباً بكم في Discover Kahta", sub: "يرجى اختيار لغتك للمتابعة • Devam etmek için dilinizi seçin" },
+      { lang: "es", title: "Bienvenido a Discover Kahta", sub: "Selecciona tu idioma para continuar • Devam etmek için dilinizi seçin" },
+      { lang: "ku", title: "Bi xêr hatin Discover Kahta", sub: "Ji bo berdewamkirinê zimanê xwe hilbijêrin • Devam etmek için dilinizi seçin" },
+      { lang: "ja", title: "Discover Kahta へようこそ", sub: "続けるには言語を選択してください • Devam etmek için dilinizi seçin" },
+      { lang: "zh", title: "欢迎来到 Discover Kahta", sub: "请选择您的语言以继续 • Devam etmek için dilinizi seçin" }
+    ];
+    let welcomeIdx = 0;
+
+    function updateWelcomeCycle() {
+      const item = WELCOME_CYCLE[welcomeIdx % WELCOME_CYCLE.length];
+      const titleEl = document.getElementById("welcomeAnimTitle");
+      const subEl = document.getElementById("welcomeAnimSub");
+      if (titleEl) titleEl.textContent = item.title;
+      if (subEl) subEl.textContent = item.sub;
+
+      updateTopRightCredit(currentLang);
+
+      document.querySelectorAll(".footer-welcome-item").forEach(el => {
+        el.classList.toggle("active", el.getAttribute("data-fw-lang") === item.lang);
+      });
+      welcomeIdx++;
+    }
+
+    updateWelcomeCycle();
+    setInterval(updateWelcomeCycle, 2200);
+
+    function getDistanceKm(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function renderMonuments() {
+      const t = UI[currentLang] || UI.tr;
+      const grid = document.getElementById("monumentsGrid");
+      if (!grid) return;
+
+      grid.innerHTML = MONUMENTS.map((m, idx) => {
+        const md = m[currentLang] || m.tr;
+        const dist = getDistanceKm(userCoords.lat, userCoords.lon, m.lat, m.lon).toFixed(1);
+        const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lon}`;
+        const artSvg = SCENIC_SVG[m.id] || SCENIC_SVG.nemrut;
+
+        return `
+          <article class="card">
+            <div class="photo-stage">
+              ${artSvg}
+              <span class="photo-tag">${t.photoTag} #${idx + 1}</span>
+              <span class="dist-badge">${dist} ${t.km}</span>
+            </div>
+            <div class="card-body">
+              <div>
+                <div class="card-title">${md.name}</div>
+                <div class="card-loc">${md.loc}</div>
+                <p class="card-desc">${md.desc}</p>
+              </div>
+              <div class="card-actions">
+                <a class="btn-accent" href="${mapsUrl}" target="_blank" rel="noopener">${t.directions}</a>
+                <button type="button" class="btn-primary" data-speak-monument="${m.id}">${t.audio}</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      grid.querySelectorAll("[data-speak-monument]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-speak-monument");
+          const mon = MONUMENTS.find(item => item.id === id);
+          if (mon) {
+            const md = mon[currentLang] || mon.tr;
+            speakText(`${md.name}. ${md.audio}`, currentLang);
+          }
+        });
+      });
+    }
+
+    function renderFoodAndSauces() {
+      const t = UI[currentLang] || UI.tr;
+      const foodGrid = document.getElementById("foodGrid");
+      const saucesGrid = document.getElementById("saucesGrid");
+
+      if (foodGrid) {
+        foodGrid.innerHTML = DISHES.map(dish => {
+          const title = t[dish.titleKey] || UI.tr[dish.titleKey];
+          const desc = t[dish.descKey] || UI.tr[dish.descKey];
+          const artSvg = FOOD_SVG[dish.id] || FOOD_SVG.cigkofte;
+          return `
+            <article class="food-card">
+              <div class="food-art-stage">
+                ${artSvg}
+                <span class="food-badge">${t.foodBadge}</span>
+              </div>
+              <div class="food-card-body">
+                <strong>${title}</strong>
+                <span>${desc}</span>
+              </div>
+            </article>
+          `;
+        }).join("");
+      }
+
+      if (saucesGrid) {
+        saucesGrid.innerHTML = SAUCES.map(sauce => {
+          const title = t[sauce.titleKey] || UI.tr[sauce.titleKey];
+          const desc = t[sauce.descKey] || UI.tr[sauce.descKey];
+          const artSvg = SAUCE_SVG[sauce.id] || SAUCE_SVG.nareksisi;
+          return `
+            <article class="sauce-card">
+              <div class="sauce-art-stage">
+                ${artSvg}
+                <span class="sauce-badge">${t.sauceBadge}</span>
+              </div>
+              <div class="sauce-card-body">
+                <div>
+                  <strong>${title}</strong>
+                  <span>${desc}</span>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join("");
+      }
+    }
+
+    function updateCoordsDisplay() {
+      const t = UI[currentLang] || UI.tr;
+      const box = document.getElementById("coordsBox");
+      if (box) {
+        box.textContent = `${t.coordsLabel}: ${userCoords.lat.toFixed(5)} • ${userCoords.lon.toFixed(5)}`;
+      }
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const target = new Date(now);
+      target.setHours(17, 15, 0, 0);
+      if (now >= target) target.setDate(target.getDate() + 1);
+      const diff = Math.max(0, target - now);
+      const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
+      const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+      const el = document.getElementById("sunCountdown");
+      if (el) el.textContent = `${h}:${m}:${s}`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    function applyLanguage(lang) {
+      currentLang = UI[lang] ? lang : "tr";
+      const t = UI[currentLang];
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = t.dir || "ltr";
+
+      updateTopRightCredit(currentLang);
+
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (t[key]) el.textContent = t[key];
+      });
+
+      document.getElementById("btnWelcomeAudio").textContent = t.welcomeAudioBtn;
+      document.getElementById("btnStopAudio").textContent = t.stopAudioBtn;
+      document.getElementById("btnStopAllAudio").textContent = t.stopAllBtn;
+      document.getElementById("heroTitle").innerHTML = t.heroTitle;
+      document.getElementById("heroSub").textContent = t.heroSub;
+      document.getElementById("btnLocate").textContent = t.btnLocate;
+      document.getElementById("gpsStatus").textContent = hasLiveGps ? t.gpsFound : t.gpsDefault;
+      document.getElementById("sunTitle").textContent = t.sunTitle;
+      document.getElementById("sunriseLabel").textContent = `${t.sunrise}: 06:45`;
+      document.getElementById("sunsetLabel").textContent = `${t.sunset}: 17:15`;
+      document.getElementById("coldAlert").textContent = t.coldAlert;
+      document.getElementById("sosDesc").textContent = t.sosDesc;
+      document.getElementById("btnShareLoc").textContent = t.btnShareLoc;
+      document.getElementById("footerNote").textContent = t.footerNote;
+
+      AmbientAudio.syncButtons();
+      updateCoordsDisplay();
+      renderMonuments();
+      renderFoodAndSauces();
+      syncMiroLanguage(true);
+    }
+
+    document.querySelectorAll("[data-voice-lang]").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const vLang = btn.getAttribute("data-voice-lang");
+        const vt = UI[vLang] || UI.tr;
+        speakText(vt.welcomeNarration, vLang);
+      });
+    });
+
+    document.getElementById("btnWelcomeAudio").addEventListener("click", () => {
+      speakText(UI[currentLang].welcomeNarration, currentLang);
+    });
+
+    document.getElementById("btnStopAudio").addEventListener("click", stopAllAudio);
+    document.getElementById("btnStopAllAudio").addEventListener("click", stopAllAudio);
+    document.getElementById("btnToggleMusic").addEventListener("click", () => AmbientAudio.toggle());
+
+    document.getElementById("btnSpeakRoute").addEventListener("click", () => {
+      speakText(UI[currentLang].routeNarration, currentLang);
+    });
+    document.getElementById("btnSpeakFood").addEventListener("click", () => {
+      speakText(UI[currentLang].foodNarration, currentLang);
+    });
+    document.getElementById("btnSpeakSauces").addEventListener("click", () => {
+      speakText(UI[currentLang].saucesNarration, currentLang);
+    });
+    document.getElementById("btnSpeakTransport").addEventListener("click", () => {
+      speakText(UI[currentLang].transportNarration, currentLang);
+    });
+    document.getElementById("btnSpeakSos").addEventListener("click", () => {
+      speakText(UI[currentLang].sosNarration, currentLang);
+    });
+
+    function selectLanguage(lang) {
+      hasChosenLanguage = true;
+      applyLanguage(lang);
+      langScreen.classList.add("hidden");
+    }
+
+    document.querySelectorAll(".lang-select-btn").forEach(btn => {
+      btn.addEventListener("click", () => selectLanguage(btn.getAttribute("data-lang")));
+    });
+
+    document.getElementById("btnOpenLang").addEventListener("click", () => {
+      hasChosenLanguage = false;
+      langScreen.classList.remove("hidden");
+      updateTopRightCredit(currentLang);
+    });
+
+    document.getElementById("btnLocate").addEventListener("click", () => {
+      const t = UI[currentLang];
+      const statusEl = document.getElementById("gpsStatus");
+      if (!navigator.geolocation) {
+        statusEl.textContent = t.gpsUnavailable;
+        showToast(t.gpsUnavailable);
+        return;
+      }
+      statusEl.textContent = t.gpsLocating;
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+          hasLiveGps = true;
+          statusEl.textContent = t.gpsFound;
+          updateCoordsDisplay();
+          renderMonuments();
+          showToast(t.gpsFound);
+        },
+        () => {
+          hasLiveGps = false;
+          statusEl.textContent = t.gpsDenied;
+          showToast(t.gpsDenied);
+        },
+        { enableHighAccuracy: true, timeout: 9000 }
+      );
+    });
+
+    document.getElementById("btnShareLoc").addEventListener("click", async () => {
+      const t = UI[currentLang];
+      const text = `Discover Kahta SOS — ${userCoords.lat.toFixed(5)}, ${userCoords.lon.toFixed(5)} (https://www.google.com/maps?q=${userCoords.lat},${userCoords.lon})`;
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: "Discover Kahta SOS", text });
+          showToast(t.shared);
+          return;
+        } catch (err) {}
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(t.copied);
+      } catch (err) {
+        showToast(text);
+      }
+    });
+
+    const miroFab = document.getElementById("miroFab");
+    const miroModal = document.getElementById("miroModal");
+    const miroClose = document.getElementById("miroClose");
+    const miroPrompts = document.getElementById("miroPrompts");
+    const miroMessages = document.getElementById("miroMessages");
+    const miroForm = document.getElementById("miroForm");
+    const miroInput = document.getElementById("miroInput");
+
+    function detectTopic(rawText) {
+      const q = rawText.toLowerCase();
+      if (/nemrut|köprü|bridge|tümülüs|tumulus|arsemia|kale|castle|şükrü|eser|monument|tarih|history|gün batımı|sunset|2150|遺跡|古迹|معالم|جبل|آثار/.test(q)) {
+        return "monuments";
+      }
+      if (/rota|route|plan|gün|day|itinerary|program|مسار|行程|ルート/.test(q)) {
+        return "route";
+      }
+      if (/yemek|food|eat|essen|manger|çiğ|köfte|hıtap|tava|şillik|sos|sauce|nar|isot|طعام|أكل|美食|料理|xwarin|sos/.test(q)) {
+        return "food";
+      }
+      if (/ulaşım|transport|nasıl gidilir|bus|otobüs|airport|havalimanı|yol|weg|accès|مواصلات|حافلة|交通|バス|gihîştin/.test(q)) {
+        return "transport";
+      }
+      if (/sos|acil|emergency|yardım|help|112|156|konum|location|طوارئ|急救|緊急|alîkarî/.test(q)) {
+        return "sos";
+      }
+      return "general";
+    }
+
+    function appendMiroMessage(role, text, speakable = false) {
+      const pack = MIRO_PACK[currentLang] || MIRO_PACK.tr;
+      const bubble = document.createElement("div");
+      bubble.className = `miro-msg ${role}`;
+
+      const textNode = document.createElement("div");
+      textNode.textContent = text;
+      bubble.appendChild(textNode);
+
+      if (role === "bot" && speakable) {
+        const speakBtn = document.createElement("button");
+        speakBtn.type = "button";
+        speakBtn.className = "miro-speak-inline";
+        speakBtn.textContent = pack.speakMsg;
+        speakBtn.addEventListener("click", () => speakText(text, currentLang));
+        bubble.appendChild(speakBtn);
+      }
+
+      miroMessages.appendChild(bubble);
+      miroMessages.scrollTop = miroMessages.scrollHeight;
+    }
+
+    function renderMiroChips() {
+      const pack = MIRO_PACK[currentLang] || MIRO_PACK.tr;
+      miroPrompts.innerHTML = "";
+      pack.chips.forEach(item => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "miro-chip";
+        chip.textContent = item.label;
+        chip.addEventListener("click", () => handleMiroQuery(item.label, item.topic));
+        miroPrompts.appendChild(chip);
+      });
+    }
+
+    function syncMiroLanguage(resetGreeting = false) {
+      const pack = MIRO_PACK[currentLang] || MIRO_PACK.tr;
+      document.getElementById("miroFabLabel").textContent = pack.btn.replace(/^🤖\s*/, "");
+      miroFab.setAttribute("aria-label", pack.btn.replace(/^🤖\s*/, ""));
+      document.getElementById("btnOpenMiroLabel").textContent = pack.btn.replace(/^🤖\s*/, "");
+      document.getElementById("miroTitle").textContent = pack.title;
+      document.getElementById("miroSub").textContent = pack.sub;
+      miroInput.placeholder = pack.placeholder;
+      renderMiroChips();
+
+      if (resetGreeting || miroMessages.children.length === 0) {
+        miroMessages.innerHTML = "";
+        appendMiroMessage("bot", pack.greeting, true);
+      }
+    }
+
+    function handleMiroQuery(queryText, forcedTopic = null) {
+      const clean = queryText.trim();
+      if (!clean) return;
+      const pack = MIRO_PACK[currentLang] || MIRO_PACK.tr;
+
+      appendMiroMessage("user", clean, false);
+
+      const thinkingEl = document.createElement("div");
+      thinkingEl.className = "miro-msg bot";
+      thinkingEl.textContent = pack.thinking;
+      miroMessages.appendChild(thinkingEl);
+      miroMessages.scrollTop = miroMessages.scrollHeight;
+
+      const topic = forcedTopic || detectTopic(clean);
+      const reply = pack.answers[topic] || pack.answers.general;
+
+      setTimeout(() => {
+        if (thinkingEl.parentNode) thinkingEl.remove();
+        appendMiroMessage("bot", reply, true);
+      }, 240);
+    }
+
+    function openMiroModal() {
+      syncMiroLanguage(false);
+      miroModal.classList.add("open");
+      miroInput.focus();
+    }
+
+    miroFab.addEventListener("click", () => {
+      if (miroModal.classList.contains("open")) {
+        miroModal.classList.remove("open");
+      } else {
+        openMiroModal();
+      }
+    });
+
+    document.getElementById("btnOpenMiro").addEventListener("click", openMiroModal);
+
+    miroClose.addEventListener("click", () => {
+      miroModal.classList.remove("open");
+    });
+
+    miroForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const val = miroInput.value;
+      miroInput.value = "";
+      handleMiroQuery(val);
+    });
+
+    applyLanguage("tr");
+  </script>
+</body>
+</html>
